@@ -674,6 +674,14 @@ body {
     width: 100%;
   }
 
+  #line-graph {
+    flex: 1;
+    max-width: 1600;
+    width: 1600;
+    height: 350;
+    background-color: #1d202d ;
+  }
+
   #top-section-container > div {
     width: 100%;
     height: auto;

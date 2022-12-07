@@ -10,7 +10,7 @@ import pandas as pd
 
 from utils.build_components import build_banner, build_tabs, build_tab_1, generate_modal, build_quick_stats_panel, build_top_panel, build_chart_panel
 from utils.data_processing import init_df, init_value_setter_store
-from utils.generate_visualizations import generate_graph, generate_piechart, update_sparkline, populate_ooc, update_count
+from utils.generate_visualizations import generate_graph, generate_piechart, update_sparkline, populate_ooc, update_count, plot_world_map
 
 app = dash.Dash(
     __name__,
@@ -23,6 +23,7 @@ app.config["suppress_callback_exceptions"] = True
 banner_title = "COVID 19 Vaccine Efficacy Dashboard"
 banner_credits = "DSE I2700 - Lizzette Salmeron, Allen Lau, Analee Graig"
 APP_PATH = str(pathlib.Path(__file__).parent.resolve())
+DATA_PATH = os.path.join('data', "VaccineData.csv")
 df = pd.read_csv(os.path.join(APP_PATH, os.path.join("data", "spc_data.csv")))
 
 params = list(df)
@@ -85,15 +86,18 @@ app.layout = html.Div(
 )
 def render_tab_content(tab_switch, stopped_interval):
     if tab_switch == "tab1":
-        return build_tab_1(params), stopped_interval
+        return build_tab_1(DATA_PATH, params), stopped_interval
     return (
         html.Div(
             id="status-container",
             children=[
-                build_quick_stats_panel(max_length),
+                # build_quick_stats_panel(max_length),
                 html.Div(
                     id="graphs-container",
-                    children=[build_top_panel(stopped_interval, params, state_dict), build_chart_panel(params)],
+                    children=[
+                        build_top_panel(DATA_PATH, stopped_interval, params, state_dict), 
+                        build_chart_panel(params)
+                    ],
                 ),
             ],
         ),
@@ -160,6 +164,16 @@ def update_gauge(interval):
 
     return int(total_count)
 
+# GRAPH FOR GEOGRAPHIC VISUALIZATION FOR VACCINES
+@app.callback(
+    output=Output("vaccination-avail-map", "figure"),
+    inputs=[Input("manufactuer-select-dropdown", "value"),
+            # Input("country-select-dropdown", "value"),
+    ],
+    # state=[State("value-setter-store", "data")],
+)
+def return_geographic_map(manufacturer):
+    return plot_world_map(manufacturer)
 
 # # ===== Callbacks to update values based on store data and dropdown selection =====
 # @app.callback(
@@ -215,85 +229,84 @@ def update_gauge(interval):
 
 
 # ====== Callbacks to update stored data via click =====
-@app.callback(
-    output=Output("value-setter-store", "data"),
-    inputs=[Input("value-setter-set-btn", "n_clicks")],
-    state=[
-        State("metric-select-dropdown", "value"),
-        State("value-setter-store", "data"),
-        State("ud_usl_input", "value"),
-        State("ud_lsl_input", "value"),
-        State("ud_ucl_input", "value"),
-        State("ud_lcl_input", "value"),
-    ],
-)
-def set_value_setter_store(set_btn, param, data, usl, lsl, ucl, lcl):
-    if set_btn is None:
-        return data
-    else:
-        data[param]["usl"] = usl
-        data[param]["lsl"] = lsl
-        data[param]["ucl"] = ucl
-        data[param]["lcl"] = lcl
+# @app.callback(
+#     output=Output("value-setter-store", "data"),
+#     inputs=[Input("value-setter-set-btn", "n_clicks")],
+#     state=[
+#         State("metric-select-dropdown", "value"),
+#         State("value-setter-store", "data"),
+#         State("ud_usl_input", "value"),
+#         State("ud_lsl_input", "value"),
+#         State("ud_ucl_input", "value"),
+#         State("ud_lcl_input", "value"),
+#     ],
+# )
+# def set_value_setter_store(set_btn, param, data, usl, lsl, ucl, lcl):
+#     if set_btn is None:
+#         return data
+#     else:
+#         data[param]["usl"] = usl
+#         data[param]["lsl"] = lsl
+#         data[param]["ucl"] = ucl
+#         data[param]["lcl"] = lcl
 
-        # Recalculate ooc in case of param updates
-        data[param]["ooc"] = populate_ooc(df[param], ucl, lcl)
-        return data
+#         # Recalculate ooc in case of param updates
+#         data[param]["ooc"] = populate_ooc(df[param], ucl, lcl)
+#         return data
 
-
-@app.callback(
-    output=Output("value-setter-view-output", "children"),
-    inputs=[
-        Input("value-setter-view-btn", "n_clicks"),
-        Input("metric-select-dropdown", "value"),
-        Input("value-setter-store", "data"),
-    ],
-)
-def show_current_specs(n_clicks, dd_select, store_data):
-    if n_clicks > 0:
-        curr_col_data = store_data[dd_select]
-        new_df_dict = {
-            "Specs": [
-                "Upper Specification Limit",
-                "Lower Specification Limit",
-                "Upper Control Limit",
-                "Lower Control Limit",
-            ],
-            "Current Setup": [
-                curr_col_data["usl"],
-                curr_col_data["lsl"],
-                curr_col_data["ucl"],
-                curr_col_data["lcl"],
-            ],
-        }
-        new_df = pd.DataFrame.from_dict(new_df_dict)
-        return dash_table.DataTable(
-            style_header={"fontWeight": "bold", "color": "inherit"},
-            style_as_list_view=True,
-            fill_width=True,
-            style_cell_conditional=[
-                {"if": {"column_id": "Specs"}, "textAlign": "left"}
-            ],
-            style_cell={
-                "backgroundColor": "#1e2130",
-                "fontFamily": "Open Sans",
-                "padding": "0 2rem",
-                "color": "darkgray",
-                "border": "none",
-            },
-            css=[
-                {"selector": "tr:hover td", "rule": "color: #91dfd2 !important;"},
-                {"selector": "td", "rule": "border: none !important;"},
-                {
-                    "selector": ".dash-cell.focused",
-                    "rule": "background-color: #1e2130 !important;",
-                },
-                {"selector": "table", "rule": "--accent: #1e2130;"},
-                {"selector": "tr", "rule": "background-color: transparent"},
-            ],
-            data=new_df.to_dict("rows"),
-            columns=[{"id": c, "name": c} for c in ["Specs", "Current Setup"]],
-        )
+# @app.callback(
+#     output=Output("value-setter-view-output", "children"),
+#     inputs=[
+#         Input("value-setter-view-btn", "n_clicks"),
+#         Input("metric-select-dropdown", "value"),
+#         Input("value-setter-store", "data"),
+#     ],
+# )
+# def show_current_specs(n_clicks, dd_select, store_data): #THIS SHOULD RECENTER plot_world_map() 
+#     if n_clicks > 0:
+#         curr_col_data = store_data[dd_select]
+#         new_df_dict = {
+#             "Specs": [
+#                 "Upper Specification Limit",
+#                 "Lower Specification Limit",
+#                 "Upper Control Limit",
+#                 "Lower Control Limit",
+#             ],
+#             "Current Setup": [
+#                 curr_col_data["usl"],
+#                 curr_col_data["lsl"],
+#                 curr_col_data["ucl"],
+#                 curr_col_data["lcl"],
+#             ],
+#         }
+#         new_df = pd.DataFrame.from_dict(new_df_dict)
+#         return dash_table.DataTable(
+#             style_header={"fontWeight": "bold", "color": "inherit"},
+#             style_as_list_view=True,
+#             fill_width=True,
+#             style_cell_conditional=[
+#                 {"if": {"column_id": "Specs"}, "textAlign": "left"}
+#             ],
+#             style_cell={
+#                 "backgroundColor": "#1e2130",
+#                 "fontFamily": "Open Sans",
+#                 "padding": "0 2rem",
+#                 "color": "darkgray",
+#                 "border": "none",
+#             },
+#             css=[
+#                 {"selector": "tr:hover td", "rule": "color: #91dfd2 !important;"},
+#                 {"selector": "td", "rule": "border: none !important;"},
+#                 {
+#                     "selector": ".dash-cell.focused",
+#                     "rule": "background-color: #1e2130 !important;",
+#                 },
+#                 {"selector": "table", "rule": "--accent: #1e2130;"},
+#                 {"selector": "tr", "rule": "background-color: transparent"},
+#             ],
+#             data=new_df.to_dict("rows"),
+#             columns=[{"id": c, "name": c} for c in ["Specs", "Current Setup"]],
+#         )
 
 
 # decorator for list of output

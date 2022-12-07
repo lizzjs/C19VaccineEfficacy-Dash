@@ -3,8 +3,10 @@ import dash_core_components as dcc
 import dash_daq as daq
 import dash_html_components as html
 import plotly.graph_objs as go
+import plotly.express as px
 
-from utils.generate_visualizations import generate_piechart
+from utils.generate_visualizations import generate_piechart, line_area_breakout_graph, plot_world_map
+from utils.data_processing import init_covid_df, get_manufacturer_country
 
 def build_banner(title, credits):
     return html.Div(
@@ -59,7 +61,11 @@ def build_tabs():
         ],
     )
 
-def build_tab_1(params):
+def build_tab_1(path, params):
+    df = get_manufacturer_country(path)
+    manufacturer = list(df['Vaccine_Manufacturer'].unique())
+    country = list(df['Country'].unique())
+    
     return [
         # Manually select metrics
         html.Div(
@@ -79,11 +85,9 @@ def build_tab_1(params):
                         html.Label(id="metric-select-title", children="Select Manufacturer"),
                         html.Br(),
                         dcc.Dropdown(
-                            id="metric-select-dropdown",
-                            options=list(
-                                {"label": param, "value": param} for param in params[1:]
-                            ),
-                            value=params[1],
+                            id="manufacturer-select-dropdown",
+                            options=manufacturer,
+                            value=manufacturer[1],
                         ),
                     ],
                 ),
@@ -94,11 +98,9 @@ def build_tab_1(params):
                         html.Label(id="metric-select-title", children="Select Country"),
                         html.Br(),
                         dcc.Dropdown(
-                            id="metric-select-dropdown",
-                            options=list(
-                                {"label": param, "value": param} for param in params[1:]
-                            ),
-                            value=params[1],
+                            id="country-select-dropdown",
+                            options=country,
+                            # value=params[1],
                         ),
                     ],
                 ),
@@ -111,16 +113,28 @@ def build_tab_1(params):
                         html.Div(
                             id="button-div",
                             children=[
-                                html.Button("Update", id="value-setter-set-btn"),
+                                # html.Button(
+                                #     "Update", 
+                                #     # id="value-setter-set-btn",
+                                #     id=""
+                                # ),
                                 html.Button(
                                     "Recenter Map",
-                                    id="value-setter-view-btn",
+                                    # id="value-setter-view-btn",
+                                    id="",
                                     n_clicks=0,
                                 ),
                             ],
                         ),
                         html.Div(
-                            id="value-setter-view-output", className="output-datatable"
+                            # id="value-setter-view-output", className="output-datatable",
+                            id="graphs-container",
+                            children=[
+                                dcc.Graph(
+                                    id="vaccination-avail-map",
+                                    # figure=plot_world_map("Novamax", df)
+                                )
+                            ]
                         ),
                     ],
                 ),
@@ -230,7 +244,15 @@ def build_quick_stats_panel(length):
 def generate_section_banner(title):
     return html.Div(className="section-banner", children=title)
 
-def build_top_panel(stopped_interval, params, state_dict):
+def build_top_panel_1(path):
+    df = init_covid_df(path)
+
+    return html.Div(
+
+    )
+
+def build_top_panel(path, stopped_interval, params, state_dict):
+    df = init_covid_df(path)
     return html.Div(
         id="top-section-container",
         className="row",
@@ -240,21 +262,18 @@ def build_top_panel(stopped_interval, params, state_dict):
                 id="metric-summary-session",
                 className="eight columns",
                 children=[
-                    generate_section_banner("Process Control Metrics Summary"),
+                    generate_section_banner("Line Area Graph for Breakout Infection"),
                     html.Div(
                         id="metric-div",
                         children=[
-                            generate_metric_list_header(),
+                            # generate_metric_list_header(),
                             html.Div(
-                                id="metric-rows",
+                                id="graphs-container",
                                 children=[
-                                    generate_metric_row_helper(stopped_interval, 1, params, state_dict),
-                                    generate_metric_row_helper(stopped_interval, 2, params, state_dict),
-                                    generate_metric_row_helper(stopped_interval, 3, params, state_dict),
-                                    generate_metric_row_helper(stopped_interval, 4, params, state_dict),
-                                    generate_metric_row_helper(stopped_interval, 5, params, state_dict),
-                                    generate_metric_row_helper(stopped_interval, 6, params, state_dict),
-                                    generate_metric_row_helper(stopped_interval, 7, params, state_dict),
+                                    dcc.Graph(
+                                        id="",
+                                        figure= line_area_breakout_graph(df)
+                                    )
                                 ],
                             ),
                         ],

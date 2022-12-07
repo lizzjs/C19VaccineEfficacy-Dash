@@ -1,4 +1,10 @@
+import os 
+
 import dash_core_components as dcc  
+import plotly.express as px
+import plotly.graph_objects as go
+
+from utils.data_processing import color_in, get_manufacturer_country
 
 def generate_piechart():
     return dcc.Graph(
@@ -24,6 +30,36 @@ def generate_piechart():
             },
         },
     )
+
+def line_area_breakout_graph(df):
+    fig = px.line(df[df['Country']=='Estonia'].sort_values(['Vaccine_Manufacturer','Date']),
+                    x="Date",
+                    y="Total_Vaccinations",
+                    color='Vaccine_Manufacturer', 
+                    width=825, 
+                    height=350
+                )
+    fig.update_layout(margin=dict(l=5, r=5, t=20, b=20), paper_bgcolor="#1d202d", plot_bgcolor="#34394f", font_color="white")
+    fig.update_xaxes(showline=True, linewidth=2, linecolor='black', mirror=True, gridwidth=1, gridcolor="#5a6285")
+    fig.update_yaxes(showline=True, linewidth=2, linecolor='black', mirror=True, gridwidth=1, gridcolor="#5a6285")
+    return fig
+
+    
+def plot_world_map(manufacturer):
+    path = os.path.join("data", "VaccineData.csv")
+    data = get_manufacturer_country(path)
+    data['Availibility'] = data.apply (lambda row: color_in(row, manufacturer), axis=1)
+    fig = px.choropleth(data,
+                       locations=data.Code,
+                       color='Availibility',
+                       color_discrete_map={
+                           f"{manufacturer} administered": data.Color.iloc[1]
+                       },
+                        projection='natural earth',
+
+                        title=f"{manufacturer} Vaccine by Country"
+                       )
+    return fig
 
 def generate_graph(interval, specs_dict, col, state_dict, max_length):
     stats = state_dict[col]
