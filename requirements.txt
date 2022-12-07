@@ -1,0 +1,7 @@
+dash==1.0.2
+dash_core_components==1.0.0
+dash_daq==0.1.7
+dash_html_components==1.0.0
+dash_table==4.0.2
+pandas==1.5.2
+plotly==5.11.0
