@@ -1,57 +1,17 @@
+import os
+ 
 import pandas as pd 
-import os 
 
-DATA_PATH = os.path.join('..', 'data', "VaccineData.csv")
+def init_data():
+    df = pd.read_csv(os.path.join("data", "VaccineData.csv"))
+    df.drop(df.loc[df['Country'] == 'European Union'].index, inplace=True, axis=0)
+    df = get_manufacturer_country(df)
+    eff_df = init_efficacy_df(df)
+    perc_df = pd.read_csv(os.path.join("data", "share-people-vaccinated-covid.csv"))
 
-def populate_ooc(data, ucl, lcl):
-    ooc_count = 0
-    ret = []
-    for i in range(len(data)):
-        if data[i] >= ucl or data[i] <= lcl:
-            ooc_count += 1
-            ret.append(ooc_count / (i + 1))
-        else:
-            ret.append(ooc_count / (i + 1))
-    return ret
+    return df, eff_df, perc_df
 
-def init_df(df):
-    ret = {}
-    for col in list(df[1:]):
-        data = df[col]
-        stats = data.describe()
-
-        std = stats["std"].tolist()
-        ucl = (stats["mean"] + 3 * stats["std"]).tolist()
-        lcl = (stats["mean"] - 3 * stats["std"]).tolist()
-        usl = (stats["mean"] + stats["std"]).tolist()
-        lsl = (stats["mean"] - stats["std"]).tolist()
-
-        ret.update(
-            {
-                col: {
-                    "count": stats["count"].tolist(),
-                    "data": data,
-                    "mean": stats["mean"].tolist(),
-                    "std": std,
-                    "ucl": round(ucl, 3),
-                    "lcl": round(lcl, 3),
-                    "usl": round(usl, 3),
-                    "lsl": round(lsl, 3),
-                    "min": stats["min"].tolist(),
-                    "max": stats["max"].tolist(),
-                    "ooc": populate_ooc(data, ucl, lcl),
-                }
-            }
-        )
-
-    return ret
-
-def init_value_setter_store(df):
-    # Initialize store data
-    state_dict = init_df(df)
-    return state_dict
-
-#Really bad function to fill in missing data for time series
+# Really bad function to fill in missing data for time series - Allen
 def fill_missing_data(test):
     dataframes =[]
     for country in test['Country'].unique():
@@ -65,8 +25,7 @@ def fill_missing_data(test):
             dataframes.append(df_expanded)
     return pd.concat(dataframes)
 
-def init_covid_df(path):
-    df = pd.read_csv(path)
+def init_efficacy_df(df):
     df['Date'] = pd.to_datetime(df['Date'])
 
     # drop European Union rows, since they are unneeded for this analysis
@@ -140,8 +99,7 @@ def color_in(row, manufacturer):
     if row.Vaccine_Manufacturer == manufacturer:
         return f"{manufacturer} administered"
         
-def get_manufacturer_country(path):
-    df = pd.read_csv(path)
+def get_manufacturer_country(df):
     manufacturer = list(df['Vaccine_Manufacturer'].unique())
     country = list(df['Country'].unique())
 
@@ -167,3 +125,6 @@ def get_manufacturer_country(path):
     df['Colors'] = df.apply (lambda row: assign_color(row, manufacturer_colors), axis=1)
     
     return df
+
+def get_efficacy_data():
+    pass 
