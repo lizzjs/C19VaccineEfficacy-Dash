@@ -3,7 +3,7 @@ import os
 import pathlib
 import pandas as pd
 
-from dash import dcc, html, Dash
+from dash import dcc, html, Dash, dash_table
 import dash_daq as daq
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
@@ -75,84 +75,6 @@ def build_tabs():
         ],
     )
 
-def build_tab_1(df): # NEED TO FIX THIS 
-    manufacturer = list(df['Vaccine_Manufacturer'].unique())
-    country = list(df['Country'].unique())
-    
-    return [
-        # Manually select metrics
-        html.Div(
-            id="set-specs-intro-container",
-            children=html.P(
-                "Select manufacturer to view geographic availability"
-            ),
-        ),
-        html.Div(
-            id="settings-menu",
-            children=[
-                html.Div(
-                    id="manufacturer-select-menu",
-                    children=[
-                        html.Label(id="manufacturer-select-title", children="Select Manufacturer"),
-                        html.Br(),
-                        dcc.Dropdown(
-                            id="manufacturer-select-dropdown",
-                            options=manufacturer,
-                            # value=manufacturer[1],
-                        ),
-                    ],
-                ),
-                html.Div(
-                    id="country-select-menu",
-                    # className='five columns',
-                    children=[
-                        html.Label(id="country-select-title", children="Select Country"),
-                        html.Br(),
-                        dcc.Dropdown(
-                            id="country-select-dropdown",
-                            options=country,
-                            # value=country[1]
-                        ),
-                    ],
-                ),
-                html.Div(
-                    id="value-setter-menu",
-                    # className='six columns',
-                    children=[
-                        html.Div(id="value-setter-panel"),
-                        html.Br(),
-                        html.Div(
-                            id="button-div",
-                            children=[
-                                # html.Button(
-                                #     "Update", 
-                                #     # id="value-setter-set-btn",
-                                #     id=""
-                                # ),
-                                html.Button(
-                                    "Recenter Map",
-                                    # id="recenter-map-btn",
-                                    id="",
-                                    n_clicks=0,
-                                ),
-                            ],
-                        ),
-                        html.Div(
-                            # id="value-setter-view-output", className="output-datatable",
-                            id="graphs-container",
-                            children=[
-                                dcc.Graph(
-                                    id="vaccination-avail-map",
-                                    # figure=plot_world_map("Novamax", df)
-                                )
-                            ]
-                        ),
-                    ],
-                ),
-            ],
-        ),
-    ]
-
 def build_quick_stats_panel():
     return html.Div(
         id="quick-stats",
@@ -161,10 +83,10 @@ def build_quick_stats_panel():
             html.Div(
                 id="card-1",
                 children=[
-                    html.P("Total # Of Vaccinations"),
+                    html.P("Total Vaccinations in Billions"),
                     daq.LEDDisplay(
                         id="operator-led",
-                        value="1704",
+                        value="2.482", #2482427113 
                         color="#9575cd",
                         backgroundColor="#1e2130",
                         size=50,
@@ -193,48 +115,96 @@ def generate_section_banner(title):
 def build_top_panel():
     return html.Div(
         id="top-section-container",
-        # id="control-chart-container",
-        # className="twelve columns",
-        # className="row",
         children=[
-            # Metrics summary
             html.Div(
                 id="metric-summary-session",
                 className="eight columns",
                 children=[
-                    # generate_section_banner("Process Control Metrics Summary"),
                     html.Div(
                         id="metric-div",
                         children=[
-                            # generate_metric_list_header(), # Dont need this
                             html.Div(
                                 id="metric-rows",
                                 children=[
                                     build_world_map_graphic(manufacturers),
-                                    # generate_metric_row_helper(stopped_interval, 1),   #Replace this with a graph
-                                    # generate_metric_row_helper(stopped_interval, 2),
-                                    # generate_metric_row_helper(stopped_interval, 3),
-                                    # generate_metric_row_helper(stopped_interval, 4),
-                                    # generate_metric_row_helper(stopped_interval, 5),
-                                    # generate_metric_row_helper(stopped_interval, 6),
-                                    # generate_metric_row_helper(stopped_interval, 7),
                                 ],
                             ),
                         ],
                     ),
                 ],
             ),
-            # # Piechart                                                           #Maybe remove this 
-            # html.Div(
-            #     id="ooc-piechart-outer",
-            #     className="four columns",
-            #     children=[
-            #         generate_section_banner("% OOC per Parameter"),
-            #         # generate_piechart(), #
-            #     ],
-            # ),
         ],
     )
+
+def build_graph_div(fig, section_header, dropdown_options=[], dropdown_id='', dropdown_label='', multi_dropdown=False):
+    '''
+    params:
+        - figure: plotly.figure object or a dcc.Graph id (str)
+        - section_header (str): Title for the graph div section
+        - dropdown_options (list):  List of options for dropdown menu 
+        - dropdown_id (str): Callback Input of the dropdown object, this dropdown_id is what changes the plots
+        - multi_dropdown (bool): True if multiple dropdown menu options are accepted 
+    return: 
+        - returns an dash.html.Div that renders the section header, dropdown menu (if available), and graph
+    '''
+    if isinstance(fig, str):
+        graph_object = dcc.Graph(id=f"{fig}")
+    else: 
+        graph_object = dcc.Graph(figure=fig)
+    
+    # check for drop down 
+    if len(dropdown_options):
+        # this means it is NOT empty, we have a drop down 
+        if multi_dropdown: 
+            # this means it IS a multi-selection dropdown menu 
+            dropdown_object = dcc.Dropdown(
+                options=dropdown_options, 
+                value=dropdown_options[-2:],
+                multi=True,
+                id=dropdown_id
+
+            )
+        else: 
+            dropdown_object = dcc.Dropdown(
+                options=dropdown_options, 
+                value=dropdown_options[0],
+                id=dropdown_id
+            )
+        
+        return html.Div(
+            id="control-chart-container",
+            className="twelve columns",
+            children=[
+                generate_section_banner(section_header),
+                html.Div([
+                        html.Label(children=str(dropdown_label)),
+                        dropdown_object,
+                    ]
+                ),
+                graph_object
+            ]
+        )
+    return html.Div(
+        id="control-chart-container",
+        className="twelve columns",
+        children=[
+            generate_section_banner(section_header),
+            graph_object
+        ]
+    )
+            
+
+    
+    # div_children.append(graph_object)
+    # print(div_children)
+    # return html.Div(
+    #     id='control-chart-container',
+    #     className="twelve columns", 
+    #     children=div_children
+    # )
+
+# how to use this function
+# build_graph_div (line_graph, "")
 
 def build_top_panel_tab1():
      return html.Div(
@@ -270,4 +240,24 @@ def build_graph_panel(graph, title): # Can use this over and over for any graphs
                 figure=graph,
             ),
         ],
+    )
+
+def build_eff_table_div(df, max_rows=10):
+    return( 
+        dash_table.DataTable(
+            data=df.head(max_rows).to_dict('records'), 
+            columns=[{'id': c, 'name': c} for c in df.columns],
+            style_table={'overflowX': 'scroll'},
+            style_header={
+                'backgroundColor': '#1e2130',
+                'color': 'white'
+            },
+            style_data={
+                'backgroundColor': '#34394f',
+                'color': 'white'
+            },
+            style_cell_conditional=[  # align text columns to left. By default they are aligned to right
+                {"if": {"column_id": c}, "textAlign": "center"} for c in df.columns
+            ]
+        )
     )

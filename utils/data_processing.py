@@ -113,7 +113,7 @@ def init_efficacy_df(df):
     df_expanded['breakthrough omicron'] = df_expanded['num manuf vacc per 100 ppl'] * (1 - (df_expanded['Eff Infection Omicron']/100)) 
 
     #collapse datafarme 
-    df = collapse(df,df_expanded)
+    df = collapse(df, df_expanded)
 
     #drop na rows in collapse df due to missing data from share-people-vaccinated-covid.csv
     df = df.dropna()
