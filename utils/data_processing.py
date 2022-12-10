@@ -11,6 +11,8 @@ def init_data():
 
     return df, eff_df, perc_df
 
+'''
+#COMMENTED OUT CODE 
 # Really bad function to fill in missing data for time series - Allen
 def fill_missing_data(test):
     dataframes =[]
@@ -24,7 +26,102 @@ def fill_missing_data(test):
             df_expanded = df_expanded.ffill()
             dataframes.append(df_expanded)
     return pd.concat(dataframes)
+'''
 
+
+## ALLEN ## 
+# Function to fill in non-existent dates for manufacturers for each country
+# Assumption: For non-existent dates, it is assumed that the vaccinations given is constant
+def fill_missing_data(df_in):
+    dataframes =[]
+    for country in df_in['Country'].unique():
+        df = df_in[df_in['Country']==country]
+        manuflist = list(df['Vaccine_Manufacturer'].unique())
+        for manuf in manuflist:
+            df_sm = df[df['Vaccine_Manufacturer']==manuf]
+            df_expanded = pd.DataFrame({'Date':pd.date_range(start=df_sm.loc[df_sm.Date.idxmin()]['Date'], end=df.loc[df.Date.idxmax()]['Date'])})
+            df_expanded = pd.merge(df_expanded,df_sm,how='left',on=['Date'])
+            df_expanded = df_expanded.ffill()
+            dataframes.append(df_expanded)
+    return pd.concat(dataframes)
+
+
+## ALLEN ## 
+# Function to collapse expanded dataframe such that it only includes the dates of the original dataframe 
+def collapse(df,df_expanded):
+    dataframes =[]
+    for country in df_expanded['Country'].unique():
+        d_f = df_expanded[df_expanded['Country']==country]
+        dates = df[df['Country']==country]['Date']
+        d_f = d_f[d_f['Date'].isin(dates)]
+        dataframes.append(d_f)
+    return pd.concat(dataframes)
+
+
+## ALLEN ## 
+# Function to initialize dataframe with efficacy, proportion, and breakthrough calculations
+def init_efficacy_df(df):
+    #Convert Date col to datetime type
+    df['Date'] = pd.to_datetime(df['Date'])
+
+    # drop European Union rows, since they are unneeded for this analysis
+    df.drop(df.loc[df['Country'] == 'European Union'].index, inplace=True, axis=0)
+
+    # drop columns that are not alpha, delta, or omnicrom 
+    df.drop(df.columns[[4,5,8,9,10,11]], axis=1, inplace = True)
+
+    #load and merge efficacy data 
+    efficacy_path = os.path.join('data', 'Vaccine_Efficacy.csv')
+    df_eff = pd.read_csv(efficacy_path)
+    df_eff.drop(df_eff.columns[[1,2,5,6,7,8]], axis=1, inplace = True)
+    df = pd.merge(df,df_eff,on='Vaccine_Manufacturer',how='left')
+
+    #expanded dataframe with forward filled data for all dates in timeseries 
+    df_expanded = fill_missing_data(df)
+
+    #added column for total vaccine of all manuf for specific date and country for proportion calculations
+    total_vacc = df_expanded.groupby(['Country','Date']).sum()[['Total_Vaccinations']].rename(columns={'Total_Vaccinations':'Total'})
+
+    #merge total vaccination per day calculation to df_expanded 
+    df_expanded = pd.merge(df_expanded,total_vacc,how='left',on=['Country','Date'])
+
+    #path to share-people-vaccinated-covid csv file 
+    share_people_path = os.path.join("data", "share-people-vaccinated-covid.csv")
+    #merge number vaccined (at least one dose) per 100 people to dataframe
+    df_proportions = pd.read_csv(share_people_path)
+    df_proportions.drop(['Code','145610-annotations'],inplace=True,axis=1)
+    df_proportions.columns = ['Country','Date','overall vacc per 100 ppl']
+    df_proportions['Date'] = pd.to_datetime(df_proportions['Date'])
+    df_expanded = pd.merge(df_expanded,df_proportions,on=['Country','Date'],how='left')
+
+    ## proportion calculations 
+    # percent of specific manuf vaccine out of the total vaccinations administered
+    df_expanded['perc of manuf vacc'] = df_expanded['Total_Vaccinations'] / df_expanded['Total'] * 100
+    # specific manuf vaccine administered per 100 ppl
+    df_expanded['num manuf vacc per 100 ppl'] = df_expanded['perc of manuf vacc'] / 100 * df_expanded['overall vacc per 100 ppl']
+
+    ## Alpha variant calculations 
+    # people who are not protected who were given the specific manuf vac per 100 ppl
+    df_expanded['breakthrough alpha'] = df_expanded['num manuf vacc per 100 ppl'] * (1 - (df_expanded['Eff Infection Alpha']/100)) 
+
+    ## Delta variant calculations 
+    # people who are not protected who were given the specific manuf vac per 100 ppl
+    df_expanded['breakthrough delta'] = df_expanded['num manuf vacc per 100 ppl'] * (1 - (df_expanded['Eff Infection Delta']/100)) 
+
+    # Omicron variant calculations 
+    # people who are not protected who were given the specific manuf vac per 100 ppl
+    df_expanded['breakthrough omicron'] = df_expanded['num manuf vacc per 100 ppl'] * (1 - (df_expanded['Eff Infection Omicron']/100)) 
+
+    #collapse datafarme 
+    df = collapse(df,df_expanded)
+
+    #drop na rows in collapse df due to missing data from share-people-vaccinated-covid.csv
+    df = df.dropna()
+
+    return df
+
+'''
+#COMMENTED OUT CODE 
 def init_efficacy_df(df):
     df['Date'] = pd.to_datetime(df['Date'])
 
@@ -82,6 +179,8 @@ def init_efficacy_df(df):
     df['breakthrough omicron'] = (100 - df['perc infection protected omicron']) * df['overall vacc perc'] / 100
 
     return df
+
+'''
 
 def assign_country_code (row, codes):
     try:
