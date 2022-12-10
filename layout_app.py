@@ -4,9 +4,9 @@ from assets.styling import *
 from dash import dcc, html, Dash
 
 from dash.dependencies import Input, Output
-from utils.layout_utils import build_tabs, build_banner
+from utils.layout_utils import build_tabs, build_banner, build_tab_1, build_quick_stats_panel, build_top_panel, build_graph_panel, build_world_map_graphic, build_top_panel_tab1
 from tab_layout import tab1_layout
-from utils.generate_visualizations import plot_world_map, line_area_breakout_graph, generate_percent_vaccinated_graph
+from utils.generate_visualizations import plot_world_map, line_area_breakout_graph, generate_percent_vaccinated_graph, generate_tree_map
 from utils.data_processing import init_data
 
 
@@ -41,15 +41,15 @@ app.layout = html.Div(
 
 @app.callback(
     Output('map-graphic', 'figure'),
-    Output('map-title', 'children'),
+    # Output('map-title', 'children'),
     Input('manufacturer-select', 'value')
 )
 def update_world_map(manufacturer):
     '''This callback function produces the world map that depicts where vaccine manufacturers were distributed globally/geographically'''
     fig = plot_world_map(manufacturer, df)
     fig.update_layout(margin={'l': 40, 'b': 40, 't': 10, 'r': 0}, hovermode='closest')
-    title = f"{manufacturer} Vaccine - Global Distribution"
-    return fig, title
+    # title = f"{manufacturer} Vaccine - Global Distribution"
+    return fig #, title
 
 @app.callback(
     Output('breakout-line-graph', 'figure'),
@@ -69,13 +69,54 @@ def update_percent_vaccinated_graph(countries):
 
 #Layout Callback functions
 
-@app.callback(Output('app-content', 'children'),
-              [Input('app-tabs', 'value')])
-def render_content(tab):
-    if tab == 'tab1':       
-        return tab1_layout
-    elif tab == 'tab2':
-        pass
+# @app.callback(Output('app-content', 'children'),
+#               [Input('app-tabs', 'value')])
+# def render_content(tab):
+#     if tab == 'tab1':       
+#         return tab1_layout
+#     elif tab == 'tab2':
+#         pass
+
+@app.callback(
+    [Output("app-content", "children")], #Output("interval-component", "n_intervals")],
+    [Input("app-tabs", "value")]
+    # [State("n-interval-stage", "data")],
+)
+def render_tab_content(tab_switch):
+    if tab_switch == "tab1":
+        # return build_tab_1(df)
+        return (
+        html.Div(
+            id="status-container",
+            children=[
+                build_quick_stats_panel(),
+                html.Div(
+                    id="graphs-container",
+                    children=[
+                        # build_top_panel(),
+                        build_top_panel_tab1(),
+                        build_graph_panel(generate_tree_map(df), title='Vaccine Manufacturer Tree Map')
+                    ],
+                ),
+            ],
+        ),
+    )
+    
+    return (
+        html.Div(
+            id="status-container",
+            children=[
+                build_quick_stats_panel(),
+                html.Div(
+                    id="graphs-container",
+                    children=[
+                        build_top_panel(), 
+                        build_graph_panel(graph=generate_tree_map(df), title='Vaccine Manufacturer Tree Map')
+                    ],
+                ),
+            ],
+        ),
+    )
 
 if __name__ == '__main__':
     app.run_server(debug=True)

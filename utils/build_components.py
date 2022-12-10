@@ -25,22 +25,21 @@ def build_world_map_graphic(manufacturers):
     '''This function returns an HTML div that includes a drop down menu for vaccine manufacturer and returns a world map that highlights countries where the vaccine was available'''
     return html.Div(
         children=[
+            generate_section_banner("testing"),
             html.Div([
-            html.Div([
-                html.H5(children='Select manufacturer'),
                 html.Label(children="Select Manufacturer"),
                 dcc.Dropdown(
                     manufacturers,
                     manufacturers[0],
                     id='manufacturer-select'
                 )
-            ], style={'width': '48%', 'display': 'inline-block'}),
-        ]),
-        html.Div([html.H5(children='', id='map-title')]),
+                ], style={'width': '48%', 'display': 'inline-block'}
+            ),
+        # html.Div([html.H5(children='', id='map-title')]),
         html.Br(),
         dcc.Graph(id='map-graphic'),
-        html.Br(),
-        html.Hr(),
+        # html.Br(),
+        # html.Hr(),
         ]
     )
 

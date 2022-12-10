@@ -24,7 +24,7 @@ def generate_tree_map(df):
         color_continuous_scale=px.colors.sequential.Purp
     )
 
-    fig.update_layout(width=1200, height=600, title_x=0.5, title_y=0.90, 
+    fig.update_layout( title_x=0.5, title_y=0.90, 
                         font_color='white', plot_bgcolor="#6379bf", paper_bgcolor="#1e2130", 
                         hoverlabel=dict(font_size=12))
     fig.data[0].hovertemplate = (
