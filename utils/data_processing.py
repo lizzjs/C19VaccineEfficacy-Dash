@@ -102,15 +102,15 @@ def init_efficacy_df(df):
 
     ## Alpha percentage of vaccinations not offereing protection
     # percent of specific manuf vaccine out of total administered on the date not offering protection
-    df_expanded['perc of manuf vacc not prot alpha'] = df_expanded['perc of manuf vacc'] * (1 - df['Eff Infection Alpha']/100) 
+    df_expanded['perc of manuf vacc not prot alpha'] = df_expanded['perc of manuf vacc'] * (1 - df_expanded['Eff Infection Alpha']/100) 
 
     ## Delta percentage of vaccinations not offereing protection
     # percent of specific manuf vaccine out of total administered on the date not offering protection
-    df_expanded['perc of manuf vacc not prot delta'] = df_expanded['perc of manuf vacc'] * (1 - df['Eff Infection Delta']/100)
+    df_expanded['perc of manuf vacc not prot delta'] = df_expanded['perc of manuf vacc'] * (1 - df_expanded['Eff Infection Delta']/100)
 
     ## Omicron percentage of vaccinations not offereing protection
     # percent of specific manuf vaccine out of total administered on the date not offering protection
-    df_expanded['perc of manuf vacc not prot omicron'] = df_expanded['perc of manuf vacc'] * (1 - df['Eff Infection Omicron']/100) 
+    df_expanded['perc of manuf vacc not prot omicron'] = df_expanded['perc of manuf vacc'] * (1 - df_expanded['Eff Infection Omicron']/100) 
 
     ## Alpha breakthrough calculations 
     # people who are not protected who were given the specific manuf vac per 100 ppl
