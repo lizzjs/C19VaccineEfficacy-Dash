@@ -1,7 +1,7 @@
 from dash import Dash, dcc, html, Input, Output
 
 from utils.data_processing import init_data
-from utils.generate_visualizations import plot_world_map, line_area_breakout_graph, generate_percent_vaccinated_graph, generate_tree_map
+from utils.generate_visualizations import plot_world_map, line_area_breakout_graph, generate_percent_vaccinated_graph, generate_tree_map, protected_over_time_agg
 from utils.build_components import build_banner, build_world_map_graphic, build_total_vaccinations_country, build_perc_vaccinated_graphic
 
 app = Dash(__name__)
@@ -67,6 +67,16 @@ def update_breakout_graph(country):
 def update_percent_vaccinated_graph(countries):
     '''This callback function produces the Percentage of people vaccinated over time line graph'''
     return generate_percent_vaccinated_graph(perc_df, countries)
+
+
+#Allen Code 
+@app.callback(
+    Output('protected_over_time_agg','figure'),
+    Input('countries-select-single','value')
+)
+def update_percent_vaccinated_graph(country):
+    return protected_over_time_agg(eff_df,country)
+
 
 if __name__ == '__main__':
     app.run_server(debug=True)

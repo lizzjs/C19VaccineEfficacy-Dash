@@ -1,5 +1,6 @@
 import plotly.express as px
 import plotly.graph_objects as go
+from plotly.graph_objs import Layout
 
 from utils.data_processing import color_in
 
@@ -68,3 +69,50 @@ def generate_percent_vaccinated_graph(data, countries_selected):
     fig.update_xaxes(showline=True, linewidth=2, linecolor='black', mirror=True, gridwidth=1, gridcolor="#5a6285")
     fig.update_yaxes(showline=True, linewidth=2, linecolor='black', mirror=True, gridwidth=1, gridcolor="#5a6285", range=[0,100])
     return fig 
+
+
+#ALLEN CODE 
+def protected_over_time_agg(df, country):
+    # Generate dataframe
+    agg_df= df[df['Country'] == country][['Country',
+                                               'Date',
+                                               'Vaccine_Manufacturer', 
+                                               'perc of manuf vacc not prot alpha',
+                                               'perc of manuf vacc not prot delta',
+                                               'perc of manuf vacc not prot omicron']].melt(id_vars = ['Country', 'Vaccine_Manufacturer', 'Date'],
+                                                                                            var_name = 'Variant',
+                                                                                            value_name = 'perc of manuf vacc not prot')
+
+    # Map column values for readibility
+    agg_df['Variant'] = agg_df['Variant'].map({'perc of manuf vacc not prot alpha': '% Alpha Not Protected',
+                                               'perc of manuf vacc not prot delta': '% Delta Not Protected',
+                                               'perc of manuf vacc not prot omicron': '% Omicron Not Protected'})
+    
+    # Define backdrop
+    layout = Layout(
+    paper_bgcolor='rgba(0,0,0,0)',
+    plot_bgcolor='rgba(0,0,0,0)')
+    
+    # Generate lineplot
+    fig = px.line(agg_df.groupby(['Variant', 'Date']).sum().reset_index(),
+                  x = 'Date',
+                  y = 'perc of manuf vacc not prot',
+                  range_y = [0, 100],
+                  color = 'Variant',
+                  labels = {'perc of manuf vacc not prot': '% of Total Doses'},
+                  title="layout.hovermode='x unified'")
+    fig.update_layout(title_text = "<b>Percentage of Total Doses Administered not Protected from Infection<br></b><i>over Time, by Variant</i>", 
+                      title_x = 0.05,
+                      titlefont=dict(size =16, color='black'),
+                      yaxis = dict(tickformat = "0.0f"),
+                      paper_bgcolor = "rgba(0,0,0,0)", 
+                      plot_bgcolor = "rgba(0,0,0,0)")
+    fig.update_xaxes(showline = True, linewidth = 1, linecolor = '#DCDCDC', mirror = True,
+                     showgrid = True, gridwidth = 1, gridcolor = '#DCDCDC')
+    fig.update_yaxes(showline = True, linewidth = 1, linecolor = '#DCDCDC', mirror = True,
+                     showgrid = True, gridwidth = 1, gridcolor = '#DCDCDC')
+    fig.update_traces(line = dict(width=3))
+    fig.update_traces(mode="markers+lines", hovertemplate=None)
+    fig.update_layout(hovermode="x unified")
+    
+    return fig

@@ -7,7 +7,7 @@ from dash.dependencies import Input, Output
 from utils.layout_utils import build_tabs, build_banner, build_quick_stats_panel, build_graph_div, build_eff_table_div
 from tab_layout import tab1_layout
 from utils.build_components import generate_section_banner
-from utils.generate_visualizations import plot_world_map, line_area_breakout_graph, generate_percent_vaccinated_graph, generate_tree_map
+from utils.generate_visualizations import plot_world_map, line_area_breakout_graph, generate_percent_vaccinated_graph, generate_tree_map, protected_over_time_agg
 from utils.data_processing import init_data
 
 
@@ -67,6 +67,15 @@ def update_percent_vaccinated_graph(countries):
     '''This callback function produces the Percentage of people vaccinated over time line graph'''
     return generate_percent_vaccinated_graph(perc_df, countries)
 
+#Allen Code 
+@app.callback(
+    Output('protected_over_time_agg','figure'),
+    Input('countries-select-single','value')
+)
+def update_protected_over_time_agg(country):
+    return protected_over_time_agg(eff_df,country)
+
+
 #Layout Callback functions
 
 @app.callback(
@@ -88,7 +97,12 @@ def render_tab_content(tab_switch):
                                     dropdown_id='manufacturer-select', 
                                     dropdown_options=manufacturers, 
                                     dropdown_label='select manufacturer'),
-                                build_graph_div(fig=generate_tree_map(df),section_header="Tree Map Test"),   
+                                build_graph_div(fig=generate_tree_map(df),section_header="Tree Map Test"),
+                                build_graph_div(fig='protected_over_time_agg',
+                                    section_header='Percentage of Total Doses not Protecting Against Infection',
+                                    dropdown_id='countries-select-single',
+                                    dropdown_options=countries,
+                                    dropdown_label='select country'),
                                 html.Div(children=[
                                     generate_section_banner(title="Table"),
                                     build_eff_table_div(eff_df, max_rows=10)          
