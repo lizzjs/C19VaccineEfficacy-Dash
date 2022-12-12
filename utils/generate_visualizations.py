@@ -46,8 +46,8 @@ def line_area_breakout_graph(df, country):
                     labels=dict(Date="Date", Total_Vaccinations="Total Vaccinations", Vaccine_Manufacturer="Manufacturer")
                 )
     fig.update_layout(margin=dict(l=5, r=5, t=20, b=20), paper_bgcolor="#1d202d", plot_bgcolor="#34394f", font_color="white")
-    fig.update_xaxes(showline=True, linewidth=2, linecolor='black', mirror=True, gridwidth=1, gridcolor="#5a6285")
-    fig.update_yaxes(showline=True, linewidth=2, linecolor='black', mirror=True, gridwidth=1, gridcolor="#5a6285")
+    fig.update_xaxes(showline=True, linewidth=1, linecolor='black', mirror=True, gridwidth=1, gridcolor="#5a6285")
+    fig.update_yaxes(showline=True, linewidth=1, linecolor='black', mirror=True, gridwidth=1, gridcolor="#5a6285")
     return fig
 
 def generate_percent_vaccinated_graph(data, countries_selected):
@@ -66,8 +66,8 @@ def generate_percent_vaccinated_graph(data, countries_selected):
                         y = "people_vaccined_per_hundred",
                         labels=dict(x="Date", y="Percentage Vaccinated (%)"))
     fig.update_layout(margin=dict(l=5, r=5, t=20, b=20), paper_bgcolor="#1d202d", plot_bgcolor="#34394f", font_color="white")
-    fig.update_xaxes(showline=True, linewidth=2, linecolor='black', mirror=True, gridwidth=1, gridcolor="#5a6285")
-    fig.update_yaxes(showline=True, linewidth=2, linecolor='black', mirror=True, gridwidth=1, gridcolor="#5a6285", range=[0,100])
+    fig.update_xaxes(showline=True, linewidth=1, linecolor='black', mirror=True, gridwidth=1, gridcolor="#5a6285")
+    fig.update_yaxes(showline=True, linewidth=1, linecolor='black', mirror=True, gridwidth=1, gridcolor="#5a6285", range=[0,100])
     return fig 
 
 
@@ -88,10 +88,10 @@ def protected_over_time_agg(df, country):
                                                'perc of manuf vacc not prot delta': '% Delta Not Protected',
                                                'perc of manuf vacc not prot omicron': '% Omicron Not Protected'})
     
-    # Define backdrop
-    layout = Layout(
-    paper_bgcolor='rgba(0,0,0,0)',
-    plot_bgcolor='rgba(0,0,0,0)')
+    # # Define backdrop
+    # layout = Layout(
+    # paper_bgcolor='rgba(0,0,0,0)',
+    # plot_bgcolor='rgba(0,0,0,0)')
     
     # Generate lineplot
     fig = px.line(agg_df.groupby(['Variant', 'Date']).sum().reset_index(),
@@ -99,20 +99,24 @@ def protected_over_time_agg(df, country):
                   y = 'perc of manuf vacc not prot',
                   range_y = [0, 100],
                   color = 'Variant',
-                  labels = {'perc of manuf vacc not prot': '% of Total Doses'},
-                  title="layout.hovermode='x unified'")
-    fig.update_layout(title_text = "<b>Percentage of Total Doses Administered not Protected from Infection<br></b><i>over Time, by Variant</i>", 
-                      title_x = 0.05,
-                      titlefont=dict(size =16, color='black'),
-                      yaxis = dict(tickformat = "0.0f"),
-                      paper_bgcolor = "rgba(0,0,0,0)", 
-                      plot_bgcolor = "rgba(0,0,0,0)")
-    fig.update_xaxes(showline = True, linewidth = 1, linecolor = '#DCDCDC', mirror = True,
-                     showgrid = True, gridwidth = 1, gridcolor = '#DCDCDC')
-    fig.update_yaxes(showline = True, linewidth = 1, linecolor = '#DCDCDC', mirror = True,
-                     showgrid = True, gridwidth = 1, gridcolor = '#DCDCDC')
-    fig.update_traces(line = dict(width=3))
-    fig.update_traces(mode="markers+lines", hovertemplate=None)
+                  labels = {'perc of manuf vacc not prot': '% of Total Doses'})
+                #   title="layout.hovermode='x unified'")
+    fig.update_layout(margin=dict(l=5, r=5, t=20, b=20), paper_bgcolor="#1d202d", plot_bgcolor="#34394f", font_color="white")
+    fig.update_xaxes(showline=True, linewidth=1, linecolor='black', mirror=True, gridwidth=1, gridcolor="#5a6285")
+    fig.update_yaxes(showline=True, linewidth=1, linecolor='black', mirror=True, gridwidth=1, gridcolor="#5a6285")
+    
+    # fig.update_layout(title_text = "<b>Percentage of Total Doses Administered not Protected from Infection<br></b><i>over Time, by Variant</i>", 
+    #                   title_x = 0.05,
+    #                   titlefont=dict(size =16, color='black'),
+    #                   yaxis = dict(tickformat = "0.0f"),
+    #                   paper_bgcolor = "rgba(0,0,0,0)", 
+    #                   plot_bgcolor = "rgba(0,0,0,0)")
+    # fig.update_xaxes(showline = True, linewidth = 1, linecolor = '#DCDCDC', mirror = True,
+    #                  showgrid = True, gridwidth = 1, gridcolor = '#DCDCDC')
+    # fig.update_yaxes(showline = True, linewidth = 1, linecolor = '#DCDCDC', mirror = True,
+    #                  showgrid = True, gridwidth = 1, gridcolor = '#DCDCDC')
+    # fig.update_traces(line = dict(width=3))
+    # fig.update_traces(mode="markers+lines", hovertemplate=None)
     fig.update_layout(hovermode="x unified")
     
     return fig

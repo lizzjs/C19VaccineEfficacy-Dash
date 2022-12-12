@@ -1,17 +1,7 @@
 
-import os
-import pathlib
-import pandas as pd
-
 from dash import dcc, html, Dash, dash_table
 import dash_daq as daq
-import dash_bootstrap_components as dbc
-from dash.dependencies import Input, Output, State
-import plotly.graph_objs as go
 
-from utils.data_processing import get_manufacturer_country
-from utils.build_components import build_world_map_graphic
-from utils.generate_visualizations import generate_tree_map
 from utils.data_processing import init_data
 
 df, eff_df, perc_df = init_data()
@@ -112,57 +102,38 @@ def build_quick_stats_panel():
 def generate_section_banner(title):
     return html.Div(className="section-banner", children=title)
 
-def build_top_panel():
-    return html.Div(
-        id="top-section-container",
-        children=[
-            html.Div(
-                id="metric-summary-session",
-                className="eight columns",
-                children=[
-                    html.Div(
-                        id="metric-div",
-                        children=[
-                            html.Div(
-                                id="metric-rows",
-                                children=[
-                                    build_world_map_graphic(manufacturers),
-                                ],
-                            ),
-                        ],
-                    ),
-                ],
-            ),
-        ],
-    )
-
-def build_graph_div(fig, section_header, dropdown_options=[], dropdown_id='', dropdown_label='', multi_dropdown=False):
+def build_graph_div(fig, section_header, **kwargs):
     '''
-    params:
-        - figure: plotly.figure object or a dcc.Graph id (str)
-        - section_header (str): Title for the graph div section
-        - dropdown_options (list):  List of options for dropdown menu 
-        - dropdown_id (str): Callback Input of the dropdown object, this dropdown_id is what changes the plots
-        - multi_dropdown (bool): True if multiple dropdown menu options are accepted 
-    return: 
-        - returns an dash.html.Div that renders the section header, dropdown menu (if available), and graph
+    docs.md
     '''
+    div_children = [generate_section_banner(section_header)]
     if isinstance(fig, str):
         graph_object = dcc.Graph(id=f"{fig}")
     else: 
         graph_object = dcc.Graph(figure=fig)
     
-    # check for drop down 
-    if len(dropdown_options):
-        # this means it is NOT empty, we have a drop down 
-        if multi_dropdown: 
-            # this means it IS a multi-selection dropdown menu 
+    enable_dropdown = kwargs.pop('enable_dropdown', False)
+    enable_radio = kwargs.pop('enable_radio', False)
+
+    if enable_dropdown:
+        dropdown_id = kwargs.pop('dropdown_id', '')
+        dropdown_options = kwargs.pop('dropdown_options', [])
+        multi_dropdown = kwargs.pop('multi_dropdown', False)
+        dropdown_label = kwargs.pop('dropdown_label', '')
+    if enable_radio:
+        radio_id = kwargs.pop('radio_id', '')
+        radio_options = kwargs.pop('radio_options', [])
+        multi_radio = kwargs.pop('multi_radio', False)
+        radio_label = kwargs.pop('radio_label', '')
+    pass 
+
+    if enable_dropdown:
+        if multi_dropdown:
             dropdown_object = dcc.Dropdown(
                 options=dropdown_options, 
                 value=dropdown_options[-2:],
                 multi=True,
                 id=dropdown_id
-
             )
         else: 
             dropdown_object = dcc.Dropdown(
@@ -170,76 +141,38 @@ def build_graph_div(fig, section_header, dropdown_options=[], dropdown_id='', dr
                 value=dropdown_options[0],
                 id=dropdown_id
             )
-        
-        return html.Div(
-            id="control-chart-container",
-            className="twelve columns",
-            children=[
-                generate_section_banner(section_header),
-                html.Div([
+        dropdown_div = html.Div([
                         html.Label(children=str(dropdown_label)),
-                        dropdown_object,
-                    ]
-                ),
-                graph_object
-            ]
-        )
-    return html.Div(
-        id="control-chart-container",
-        className="twelve columns",
-        children=[
-            generate_section_banner(section_header),
-            graph_object
-        ]
-    )
-            
-
+                        dropdown_object
+                    ])
+        
+        div_children.append(dropdown_div)
     
-    # div_children.append(graph_object)
-    # print(div_children)
-    # return html.Div(
-    #     id='control-chart-container',
-    #     className="twelve columns", 
-    #     children=div_children
-    # )
-
-# how to use this function
-# build_graph_div (line_graph, "")
-
-def build_top_panel_tab1():
-     return html.Div(
-        id="control-chart-container",
-        className="twelve columns",
-        children=[
-            generate_section_banner("testing"),
-            html.Div([
-                html.Label(children="Select Manufacturer"),
-                dcc.Dropdown(
-                    manufacturers,
-                    manufacturers[0],
-                    id='manufacturer-select'
+    if enable_radio:
+        if multi_radio:
+            radio_object = dcc.Checklist(
+                options = radio_options,
+                value = radio_options[0],
+                id = radio_id
+            )
+        else:
+            radio_object = dcc.RadioItems(
+                options = radio_options,
+                value = radio_options[0],
+                id = radio_id
+            )
+        radio_div = html.Div([
+                        html.Label(children=str(radio_label)),
+                        radio_object,
+                    ]
                 )
-                ], #style={'width': '48%', 'display': 'inline-block'}
-            ),
-        # html.Div([html.H5(children='', id='map-title')]),
-        html.Br(),
-        dcc.Graph(id='map-graphic'),
-        # html.Br(),
-        # html.Hr(),
-        ]
-    )
-
-def build_graph_panel(graph, title): # Can use this over and over for any graphs 
+        div_children.append(radio_div)
+    div_children.append(graph_object)
+    
     return html.Div(
         id="control-chart-container",
         className="twelve columns",
-        children=[
-            generate_section_banner(title),
-            dcc.Graph(
-                id="control-chart-live",
-                figure=graph,
-            ),
-        ],
+        children=div_children
     )
 
 def build_eff_table_div(df, max_rows=10):
