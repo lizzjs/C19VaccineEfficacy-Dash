@@ -6,7 +6,7 @@ from dash import dcc, html, Dash
 from dash.dependencies import Input, Output
 from utils.layout_utils import build_tabs, build_banner, build_quick_stats_panel, build_graph_div, build_eff_table_div
 from utils.build_components import generate_section_banner
-from utils.generate_visualizations import plot_world_map, line_area_breakout_graph, generate_percent_vaccinated_graph, generate_tree_map, protected_over_time_agg
+from utils.generate_visualizations import plot_world_map, line_area_breakout_graph, generate_percent_vaccinated_graph, generate_tree_map, protected_over_time_agg,total_vacc_admin, create_area_graph,create_bubble_plot,breakthrough_agg 
 from utils.data_processing import init_data
 
 
@@ -74,6 +74,19 @@ def update_percent_vaccinated_graph(countries):
 def update_protected_over_time_agg(country):
     return protected_over_time_agg(eff_df,country)
 
+@app.callback(
+    Output('area_graph','figure'),
+    Input('countries-select-single','value')
+)
+def update_area_graph(country):
+    return create_area_graph(eff_df, country)
+
+@app.callback(
+    Output('breakthrough','figure'),
+    Input('countries-select-single','value')
+)
+def update_breakthrough(country):
+    return breakthrough_agg(eff_df, country)
 
 #Layout Callback functions
 
@@ -110,22 +123,39 @@ def render_tab_content(tab_switch):
                                 #     ),
                                 # TREE MAP
                                 build_graph_div(fig=generate_tree_map(df),section_header="Tree Map Test"),
-                                # # SCATTER PLOT
-                                # <------------------- (include here)
-                                #LINE GRAPH 
+                                # Total Vaccination Administered by Country Bar Plot 
+                                build_graph_div(fig=total_vacc_admin(eff_df),section_header="Total Vaccinations Administered Per Country"),
+                                # Percentage of Total Doses Area Chart
                                 build_graph_div(
-                                    fig='protected_over_time_agg',
-                                    section_header='Percentage of Total Doses not Protecting Against Infection',
+                                    fig='area_graph',
+                                    section_header='Percentage of Total Doses by Manufacturer over Time',
                                     enable_dropdown=True,
                                     dropdown_id='countries-select-single',
                                     dropdown_options=countries,
-                                    dropdown_label='select country'),
+                                    dropdown_label='Select Country'),
+                                # Percentage of Total Doses Administered not Protected
+                                build_graph_div(
+                                    fig='protected_over_time_agg',
+                                    section_header='Percentage of Total Doses Administered not Protected from Infection over Time, by Variant',
+                                    enable_dropdown=False,
+                                    dropdown_id='countries-select-single',
+                                    dropdown_options=countries,
+                                    dropdown_label='Select Country'),
+                                # Breakthrough 
+                                build_graph_div(
+                                    fig='breakthrough',
+                                    section_header='Breakthrough over Time, by Variant',
+                                    enable_dropdown=False,
+                                    dropdown_id='countries-select-single',
+                                    dropdown_options=countries,
+                                    dropdown_label='Select Country'),
                                 # #BAR GRAPH
                                 # <------------------- (include here)
                                 #TABLE OF EFFICACY RATES
+                                build_graph_div(fig = create_bubble_plot(eff_df),section_header='Vaccine Efficacy by Variant, Manufacturer'),
                                 html.Div(children=[
-                                    generate_section_banner(title="Table of Efficacy Rates"),
-                                    build_eff_table_div(eff_df, max_rows=10)          
+                                    #generate_section_banner(title="Table of Efficacy Rates"),
+                                    #build_eff_table_div(eff_df, max_rows=10)          
                                 ]),       
                             ],
                     ),

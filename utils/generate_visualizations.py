@@ -105,18 +105,163 @@ def protected_over_time_agg(df, country):
     fig.update_xaxes(showline=True, linewidth=1, linecolor='black', mirror=True, gridwidth=1, gridcolor="#5a6285")
     fig.update_yaxes(showline=True, linewidth=1, linecolor='black', mirror=True, gridwidth=1, gridcolor="#5a6285")
     
-    # fig.update_layout(title_text = "<b>Percentage of Total Doses Administered not Protected from Infection<br></b><i>over Time, by Variant</i>", 
-    #                   title_x = 0.05,
-    #                   titlefont=dict(size =16, color='black'),
-    #                   yaxis = dict(tickformat = "0.0f"),
-    #                   paper_bgcolor = "rgba(0,0,0,0)", 
-    #                   plot_bgcolor = "rgba(0,0,0,0)")
-    # fig.update_xaxes(showline = True, linewidth = 1, linecolor = '#DCDCDC', mirror = True,
-    #                  showgrid = True, gridwidth = 1, gridcolor = '#DCDCDC')
-    # fig.update_yaxes(showline = True, linewidth = 1, linecolor = '#DCDCDC', mirror = True,
-    #                  showgrid = True, gridwidth = 1, gridcolor = '#DCDCDC')
-    # fig.update_traces(line = dict(width=3))
-    # fig.update_traces(mode="markers+lines", hovertemplate=None)
+    fig.update_layout(title_text = "", 
+                      title_x = 0.05,
+                      titlefont=dict(size =16, color='black'),
+                      yaxis = dict(tickformat = "0.0f"))
+    fig.update_xaxes(showline = True, linewidth = 1, linecolor = '#DCDCDC', mirror = True,
+                     showgrid = True, gridwidth = 1, gridcolor = '#DCDCDC')
+    fig.update_yaxes(showline = True, linewidth = 1, linecolor = '#DCDCDC', mirror = True,
+                     showgrid = True, gridwidth = 1, gridcolor = '#DCDCDC')
+    fig.update_traces(line = dict(width=3))
+    fig.update_traces(mode="markers+lines", hovertemplate=None)
     fig.update_layout(hovermode="x unified")
     
     return fig
+
+
+def total_vacc_admin(df):
+    fig = go.Figure(px.bar(df.loc[df.groupby(['Country','Vaccine_Manufacturer']).Date.idxmax()].sort_values('Total'), 
+                       x="Country", 
+                       y="perc of manuf vacc", 
+                       color="Vaccine_Manufacturer"))
+    fig.update_layout(yaxis_title="Total Vaccinations")
+    fig.update_layout(margin=dict(l=5, r=5, t=20, b=20), paper_bgcolor="#1d202d", plot_bgcolor="#34394f", font_color="white")
+    fig.update_xaxes(showline=True, linewidth=1, linecolor='black', mirror=True, gridwidth=1, gridcolor="#5a6285")
+    fig.update_yaxes(showline=True, linewidth=1, linecolor='black', mirror=True, gridwidth=1, gridcolor="#5a6285")
+    return fig
+
+
+
+def create_area_graph(df, country):
+    # Create dataframe
+    df_rolling = df[['Country', 'Vaccine_Manufacturer', 'Date', 'perc of manuf vacc']]
+
+    # Filter on country
+    df_rolling = df_rolling[df_rolling['Country'] == country]
+    
+    # Create visual
+    fig = px.area(df_rolling,
+             x = 'Date',
+             y = 'perc of manuf vacc',
+             color = 'Vaccine_Manufacturer',
+             labels = {'perc of manuf vacc': '% of Total Doses', 'Vaccine_Manufacturer': 'Vaccine Manufacturer'},
+             hover_data = ['Vaccine_Manufacturer', 'perc of manuf vacc'],
+             title = "layout.hovermode='x unified'",
+             color_discrete_sequence = px.colors.qualitative.Safe)
+    
+    # Adjust formatting
+    fig.update_layout(title_text='',
+                        yaxis = dict(tickformat = "0.0f"),
+                      paper_bgcolor = "rgba(0,0,0,0)", 
+                      plot_bgcolor = "rgba(0,0,0,0)")
+    fig.update_traces(hovertemplate = None)
+    fig.update_layout(hovermode = "x unified")
+    fig.update_layout(margin=dict(l=5, r=5, t=20, b=20), paper_bgcolor="#1d202d", plot_bgcolor="#34394f", font_color="white")
+    fig.update_xaxes(showline=True, linewidth=1, linecolor='black', mirror=True, gridwidth=1, gridcolor="#5a6285")
+    fig.update_yaxes(showline=True, linewidth=1, linecolor='black', mirror=True, gridwidth=1, gridcolor="#5a6285")
+
+    return fig
+
+def create_bubble_plot(df):
+    # Define efficacy table
+    df_efficacy = df.groupby('Vaccine_Manufacturer')[['Vaccine_Manufacturer', 'Eff Severe Disease Alpha', 
+                                                      'Eff Infection Alpha', 'Eff Severe Disease delta', 
+                                                      'Eff Infection Delta', 'Eff Severe Disease Omicron', 
+                                                      'Eff Infection Omicron']].mean().reset_index()
+    
+    # Collapse efficacy columns to rows
+    df_efficacy = df_efficacy.melt(id_vars = ['Vaccine_Manufacturer'],
+                                   var_name = 'Type of Efficacy',
+                                   value_name = 'People out of 100').sort_values('Vaccine_Manufacturer')
+    # Extract variant name
+    df_efficacy['Variant'] = [val.split().pop().capitalize() for val in df_efficacy['Type of Efficacy']]
+    
+    # Extract type of protection
+    df_efficacy['Type of Protection'] = [val.rsplit(' ', 1)[0] for val in df_efficacy['Type of Efficacy']]
+    
+    # Remap column values for better readability
+    df_efficacy['Type of Protection'] = df_efficacy['Type of Protection'].map({'Eff Severe Disease': 'Severe Disease',
+                                                                               'Eff Infection': 'Infection'})    
+    # Generate visual
+    fig = px.scatter(df_efficacy.sort_values('Type of Protection'), 
+                 x="Vaccine_Manufacturer",
+                 y="Variant",
+                 size="People out of 100", 
+                 color="People out of 100",
+                 size_max = 30,
+                 animation_frame = 'Type of Protection',
+                 hover_name='People out of 100',
+                 hover_data = ['Variant', 'People out of 100'],
+                 title="layout.hovermode='closest'")
+    
+    # Format visual
+    fig.update_layout(title_text = "", 
+                          title_x = 0.0,
+                          titlefont=dict(size =16, color='black'),
+                          yaxis = dict(tickformat = "0.0f"))
+    fig.update_xaxes(showline = True, linewidth = 1, linecolor = '#DCDCDC', mirror = True,
+                     showgrid = True, gridwidth = 1, gridcolor = '#DCDCDC',
+                     title = '')
+    fig.update_yaxes(showline = True, linewidth = 1, linecolor = '#DCDCDC', mirror = True,
+                     showgrid = True, gridwidth = 1, gridcolor = '#DCDCDC',
+                     title = '')
+    fig.update_traces(hovertemplate=None)
+    fig.update_layout(hovermode="closest")
+
+    fig.update_layout(margin=dict(l=5, r=5, t=20, b=20), paper_bgcolor="#1d202d", plot_bgcolor="#34394f", font_color="white")
+    #fig.update_xaxes(showline=True, linewidth=1, linecolor='black', mirror=True, gridwidth=1, gridcolor="#5a6285")
+    #ig.update_yaxes(showline=True, linewidth=1, linecolor='black', mirror=True, gridwidth=1, gridcolor="#5a6285", range=[0,100])
+    
+    # Display visual
+    return fig 
+
+
+
+def breakthrough_agg(df, country):
+    # Generate dataframe
+    agg_df= df[df['Country'] == country][['Country',
+                                               'Date',
+                                               'Vaccine_Manufacturer', 
+                                               'breakthrough alpha',
+                                               'breakthrough delta',
+                                               'breakthrough omicron']].melt(id_vars = ['Country', 'Vaccine_Manufacturer', 'Date'],
+                                                                                            var_name = 'Variant',
+                                                                                            value_name = 'Breakthrough')
+
+    # Map column values for readibility
+    agg_df['Variant'] = agg_df['Variant'].map({'breakthrough alpha': 'Alpha Breakthrough',
+                                               'breakthrough delta': 'Delta Breakthrough',
+                                               'breakthrough omicron': 'Omicron Breakthrough'})
+    
+    # Define backdrop
+    # layout = Layout(
+    # paper_bgcolor='rgba(0,0,0,0)',
+    # plot_bgcolor='rgba(0,0,0,0)')
+    
+    # Generate lineplot
+    fig = px.line(agg_df.groupby(['Variant', 'Date']).sum().reset_index(),
+                  x = 'Date',
+                  y = 'Breakthrough',
+                  range_y = [0, 100],
+                  color = 'Variant',
+                  labels = {'Breakthrough': 'Breakthrough per 100 people'},
+                  title="layout.hovermode='x unified'",
+                  color_discrete_sequence = px.colors.qualitative.Safe)
+    fig.update_layout(margin=dict(l=5, r=5, t=20, b=20), paper_bgcolor="#1d202d", plot_bgcolor="#34394f", font_color="white")
+    fig.update_xaxes(showline=True, linewidth=1, linecolor='black', mirror=True, gridwidth=1, gridcolor="#5a6285")
+    fig.update_yaxes(showline=True, linewidth=1, linecolor='black', mirror=True, gridwidth=1, gridcolor="#5a6285")
+    
+    fig.update_layout(title_text = "", 
+                      title_x = 0.05,
+                      titlefont=dict(size =16, color='black'),
+                      yaxis = dict(tickformat = "0.0f"))
+    fig.update_xaxes(showline = True, linewidth = 1, linecolor = '#DCDCDC', mirror = True,
+                     showgrid = True, gridwidth = 1, gridcolor = '#DCDCDC')
+    fig.update_yaxes(showline = True, linewidth = 1, linecolor = '#DCDCDC', mirror = True,
+                     showgrid = True, gridwidth = 1, gridcolor = '#DCDCDC')
+    fig.update_traces(line = dict(width=3))
+    fig.update_traces(mode="markers+lines", hovertemplate=None)
+    fig.update_layout(hovermode="x unified")
+    
+    return fig 

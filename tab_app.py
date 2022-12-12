@@ -1,7 +1,7 @@
 from dash import Dash, dcc, html, Input, Output
 
 from utils.data_processing import init_data
-from utils.generate_visualizations import plot_world_map, line_area_breakout_graph, generate_percent_vaccinated_graph, generate_tree_map, protected_over_time_agg
+from utils.generate_visualizations import plot_world_map, line_area_breakout_graph, generate_percent_vaccinated_graph, generate_tree_map, protected_over_time_agg, create_area_graph,breakthrough_agg
 from utils.build_components import build_banner, build_world_map_graphic, build_total_vaccinations_country, build_perc_vaccinated_graphic
 
 app = Dash(__name__)
@@ -76,6 +76,22 @@ def update_percent_vaccinated_graph(countries):
 )
 def update_percent_vaccinated_graph(country):
     return protected_over_time_agg(eff_df,country)
+
+@app.callback(
+    Output('area_graph','figure'),
+    Input('countries-select-single','value')
+)
+def update_area_graph(country):
+    return create_area_graph(eff_df, country)
+
+@app.callback(
+    Output('breakthrough','figure'),
+    Input('countries-select-single','value')
+)
+def update_breakthrough(country):
+    return breakthrough_agg(eff_df, country)
+
+
 
 
 if __name__ == '__main__':
