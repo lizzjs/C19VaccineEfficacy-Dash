@@ -1,18 +1,21 @@
 dashboard_desc_md = '''
-&nbsp;&nbsp;After using this dashboard, you should have a clearer picture of the relationship between covid vaccination doses, efficacy and covid breakthrough rates, over time and by country.  You should &nbsp;&nbsp;be able to answer key questions such as:  
+
+After using this dashboard, you should have a clearer picture of the relationship between covid vaccination doses, efficacy and covid breakthrough rates, over time and by country.  You should &nbsp;&nbsp;be able to answer key questions such as:  
     
 * Where in the world have different vaccines been administered? Are there certain vaccine manufacturers that are more popular globally than others? How about by country? Has this changed over time?
 * What is the % of COVID19 vaccine doses given that are protected from infection by country and over time for different COVID19 variants? Is it higher for certain variants than others?
 * What is the COVID19 breakthrough rate over time and by country for different variants?
 * What can we look to help us understand the increase or decrease in breakthrough rates for different countries?
-* Is there a difference in efficacy for different vaccine manufacturers and COVID19 variants? What is this difference? Can it help us understand the above questions?
+* Is there a difference in efficacy for different vaccine manufacturers and COVID19 variants? What is this difference? 
+Can it help us understand the above questions?
   
 ---  
 ###### **Assumptions: NEED HELP HERE**    
 * Important to note is that doses administered does not equal number of people vaccinated
 * The data fed into our visualizations, including efficacy rates and vaccine doses administered has been collected and reported on accurately
 * Time series data obtained from external sources missing the total vaccines administered on a specific date for specific vaccine manufacturers are assumed to have remained constant from the last recorded total. 
-* First, second, and booster doses are not factored into the efficacy rates and calculations for breakthrough. The mixing of vaccines is also not factored into the data, calculations, and visualizations. – Probs put this one near the top since I believe the prof called this one out 
+* First, second, and booster doses are not factored into the efficacy rates and calculations for breakthrough. The mixing 
+of vaccines is also not factored into the data, calculations, and visualizations. – Probs put this one near the top since I believe the prof called this one out 
   
 ---  
 ###### **Dashboard Components**  
@@ -23,17 +26,19 @@ dashboard_desc_md = '''
 '''
 
 section_1_md ='''
-### **Section 1.** Understanding the Basics: Global Prevalence of Vaccine Manufacturers  
+##### **Section 1.** Understanding the Basics: *Global Prevalence of Vaccine Manufacturers*  
 ---  
   
 **Topics:**  
 * Which countries have received which vaccine types?
-* What is the breakout of vaccine type by country?
- 
+* What is the breakout of vaccine type by 
+country?
+
 '''
 
 section_2_md = '''
-### **Section 2:** Going Deeper: Country Analysis  
+##### **Section 2.** 
+##### Going Deeper: *Country Analysis*  
 ---    
   
 **Topics:**  
@@ -73,7 +78,8 @@ breakthrough_over_time_md = '''
 '''
 
 section_3_md = '''
-### **Section 3:** Understanding the Efficacy of Different Vaccine Manufacturers  
+##### **Section 3.** 
+##### Understanding the Efficacy of Different Vaccine Manufacturers 
 ---  
 '''
 
