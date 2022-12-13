@@ -236,6 +236,21 @@ body {
   border-top: #1E2130 solid 0.8rem;
 }
 
+#markdown-container {
+  position: relative;
+  z-index: 4;
+  width: 100%;
+  align-items: center;
+  /* border-top: #1E2130 solid 0.8rem; */
+  /* background-color: #1e2130; */
+  /* font-weight: bold; */
+  /* font-style:italic; */
+  padding: 1rem 1rem;
+  /* font-size: 1.3rem; */
+  /* color: #f3f5f4; */
+  font-family: 'open sans',sans-serif;
+}
+
 #metric-summary-session {
   height: 100%;
   flex: 1 1 auto;

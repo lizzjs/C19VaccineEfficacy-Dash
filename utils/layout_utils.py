@@ -3,6 +3,8 @@ from dash import dcc, html, Dash, dash_table
 import dash_daq as daq
 
 from utils.data_processing import init_data
+from assets.tab1_markdown import dashboard_desc_md, section_1_md, section_2_md, perc_total_doses_by_manufacturer_md, protected_over_time_agg_md, breakthrough_over_time_md, section_3_md, efficacy_md
+
 
 df, eff_df, perc_df, vac_eff_df = init_data()
 manufacturers = list(df.Vaccine_Manufacturer.unique())
@@ -96,6 +98,16 @@ def build_quick_stats_panel():
                     ),
                 ],
             ),
+            html.Br(),
+            html.Br(),
+            build_markdown_section(markdown_text=dashboard_desc_md, section_header='Dashboard Description'),
+            build_markdown_section(markdown_text=section_1_md),
+            build_markdown_section(markdown_text=section_2_md),
+            build_markdown_section(markdown_text=perc_total_doses_by_manufacturer_md), 
+            build_markdown_section(markdown_text=protected_over_time_agg_md),
+            build_markdown_section(markdown_text=breakthrough_over_time_md),
+            build_markdown_section(markdown_text=section_3_md),
+            build_markdown_section(markdown_text=efficacy_md),
         ],
     )
 
@@ -211,8 +223,8 @@ def build_markdown_section(markdown_text, section_header=None):
     div_children.append(dcc.Markdown(markdown_text, dedent=False))
     return (
         html.Div(
-            id="control-chart-container",
-            className="twelve columns", 
+            id="markdown-container",
+            # className="twelve columns", 
             children = html.Div(
                 children = div_children
             )

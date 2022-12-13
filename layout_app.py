@@ -106,8 +106,8 @@ def render_tab_content(tab_switch):
                     html.Div(
                         id="graphs-container",
                         children=[
-                                build_markdown_section(markdown_text=dashboard_desc_md, section_header='Dashboard Description'),
-                                build_markdown_section(markdown_text=section_1_md),
+                                # build_markdown_section(markdown_text=dashboard_desc_md, section_header='Dashboard Description'),
+                                # build_markdown_section(markdown_text=section_1_md),
                                 # WORLD MAP 
                                 build_graph_div(
                                     fig='map-graphic', 
@@ -129,7 +129,7 @@ def render_tab_content(tab_switch):
                                 build_graph_div(fig=generate_tree_map(df),section_header=""),
                                 # Total Vaccination Administered by Country Bar Plot 
                                 build_graph_div(fig=total_vacc_admin(eff_df),section_header="Total Vaccinations Administered Per Country"),
-                                build_markdown_section(markdown_text=section_2_md),
+                                # build_markdown_section(markdown_text=section_2_md),
                                 # Percentage of Total Doses Area Chart
                                 build_graph_div(
                                     fig='area_graph',
@@ -138,7 +138,7 @@ def render_tab_content(tab_switch):
                                     dropdown_id='countries-select-single',
                                     dropdown_options=countries,
                                     dropdown_label='Select Page Level Filter Country'),
-                                build_markdown_section(markdown_text=perc_total_doses_by_manufacturer_md), 
+                                # build_markdown_section(markdown_text=perc_total_doses_by_manufacturer_md), 
                                 # Percentage of Total Doses Administered not Protected
                                 build_graph_div(
                                     fig='protected_over_time_agg',
@@ -147,7 +147,7 @@ def render_tab_content(tab_switch):
                                     dropdown_id='countries-select-single',
                                     dropdown_options=countries,
                                     dropdown_label='Select Country'),
-                                build_markdown_section(markdown_text=protected_over_time_agg_md),
+                                # build_markdown_section(markdown_text=protected_over_time_agg_md),
                                 # Breakthrough 
                                 build_graph_div(
                                     fig='breakthrough',
@@ -156,13 +156,13 @@ def render_tab_content(tab_switch):
                                     dropdown_id='countries-select-single',
                                     dropdown_options=countries,
                                     dropdown_label='Select Country'),
-                                build_markdown_section(markdown_text=breakthrough_over_time_md),
+                                # build_markdown_section(markdown_text=breakthrough_over_time_md),
                                 # #BAR GRAPH
                                 # <------------------- (include here)
-                                build_markdown_section(markdown_text=section_3_md),
+                                # build_markdown_section(markdown_text=section_3_md),
                                 #TABLE OF EFFICACY RATES
                                 build_graph_div(fig = create_bubble_plot(eff_df),section_header=''),
-                                build_markdown_section(markdown_text=efficacy_md),
+                                # build_markdown_section(markdown_text=efficacy_md),
                                 html.Div(children=[
                                     generate_section_banner(title="Table of Efficacy Rates"),
                                     build_eff_table_div(vac_eff_df, max_rows=10)          
