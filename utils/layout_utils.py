@@ -1,6 +1,7 @@
 
 from dash import dcc, html, Dash, dash_table
 import dash_daq as daq
+import dash_bootstrap_components as dbc
 
 from utils.data_processing import init_data
 from assets.tab1_markdown import dashboard_desc_md, section_1_md, section_2_md, perc_total_doses_by_manufacturer_md, protected_over_time_agg_md, breakthrough_over_time_md, section_3_md, efficacy_md
@@ -50,18 +51,18 @@ def build_tabs():
                 children=[
                     dcc.Tab(
                         id="Specs-tab",
-                        label="TAB 1",
+                        label="",
                         value="tab1",
                         className="custom-tab",
                         selected_className="custom-tab--selected",
                     ),
-                    dcc.Tab(
-                        id="Control-chart-tab",
-                        label="Breakthrough Case Study for (Country)",
-                        value="tab2",
-                        className="custom-tab",
-                        selected_className="custom-tab--selected",
-                    ),
+                    # dcc.Tab(
+                    #     id="Control-chart-tab",
+                    #     label="Breakthrough Case Study for (Country)",
+                    #     value="tab2",
+                    #     className="custom-tab",
+                    #     selected_className="custom-tab--selected",
+                    # ),
                 ],
             )
         ],
@@ -75,7 +76,7 @@ def build_quick_stats_panel():
             html.Div(
                 id="card-1",
                 children=[
-                    html.P("Total Vaccinations in Billions"),
+                    html.P("Total Vaccine Dosages Administered (Billions)"),
                     daq.LEDDisplay(
                         id="operator-led",
                         value="2.482", #2482427113 
@@ -88,7 +89,7 @@ def build_quick_stats_panel():
             html.Div(
                 id="card-2",
                 children=[
-                    html.P("# of Countries"),
+                    html.P("Total Number of Countries"),
                     daq.LEDDisplay(
                         id="operator-led",
                         value="43",

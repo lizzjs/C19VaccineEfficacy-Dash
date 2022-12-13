@@ -172,22 +172,23 @@ def render_tab_content(tab_switch):
                 ],
             ),
         )
-    return (
-        html.Div(
-            id="status-container",
-            children=[
-                # PLACEHOLDERS
-                build_quick_stats_panel(),
-                build_graph_div(fig=generate_tree_map(df),section_header="THIS IS A PLACEHOLDER"), 
-                # # TOTAL VACCINATIONS PLOT
-                # <------------------- (include here)
-                # # BREAKTHROUGH PLOT
-                # <------------------- (include here)
-                # # SUMMARY PLOT
-                # <------------------- (include here)
-            ],
-        ),
-    )
+        
+    # return (
+    #     html.Div(
+    #         id="status-container",
+    #         children=[
+    #             # PLACEHOLDERS
+    #             build_quick_stats_panel(),
+    #             build_graph_div(fig=generate_tree_map(df),section_header="THIS IS A PLACEHOLDER"), 
+    #             # # TOTAL VACCINATIONS PLOT
+    #             # <------------------- (include here)
+    #             # # BREAKTHROUGH PLOT
+    #             # <------------------- (include here)
+    #             # # SUMMARY PLOT
+    #             # <------------------- (include here)
+    #         ],
+    #     ),
+    # )
 
 if __name__ == '__main__':
     app.run_server(debug=True)
