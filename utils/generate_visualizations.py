@@ -1,6 +1,7 @@
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.graph_objs import Layout
+import pandas as pd
 
 from utils.data_processing import color_in
 
@@ -123,14 +124,51 @@ def protected_over_time_agg(df, country):
 
 
 def total_vacc_admin(df):
-    fig = go.Figure(px.bar(df.loc[df.groupby(['Country','Vaccine_Manufacturer']).Date.idxmax()].sort_values('Total'), 
-                       x="Country", 
-                       y="perc of manuf vacc", 
-                       color="Vaccine_Manufacturer"))
-    fig.update_layout(yaxis_title="Total Vaccinations")
-    fig.update_layout(margin=dict(l=5, r=5, t=20, b=20), paper_bgcolor="#1d202d", plot_bgcolor="#34394f", font_color="white")
-    fig.update_xaxes(showline=True, linewidth=1, linecolor='black', mirror=True, gridwidth=1, gridcolor="#5a6285")
-    fig.update_yaxes(showline=True, linewidth=1, linecolor='black', mirror=True, gridwidth=1, gridcolor="#5a6285")
+    # Subset Dataframe
+    df_perc = df.loc[df.groupby(['Country',
+                       'Vaccine_Manufacturer']).Date.idxmax()].sort_values('Total')[['Country', 
+                                                                                     'Vaccine_Manufacturer',
+                                                                                     'Total_Vaccinations',
+                                                                                     'perc of manuf vacc']].sort_values(['Country', 
+                                                                                                                         'perc of manuf vacc'],
+                                                                                                                         ascending = [True, False])
+    # Create Top 2 + Others Dataframe
+    df_others = (
+                df_perc.groupby('Country').apply(
+                    lambda x: pd.concat(
+                                        [x.iloc[:2],
+                                         x.iloc[2:].groupby('Country', as_index=False)
+                                         .agg({'perc of manuf vacc': sum})
+                                         .assign(Vaccine_Manufacturer='Others')]))
+                .reset_index(drop=True)
+    )
+
+    # Create visualization
+    fig = px.bar(df_others.sort_values('Total_Vaccinations', ascending = False),
+             x = 'Country',
+             y = 'perc of manuf vacc',
+             color = 'Vaccine_Manufacturer',
+             color_discrete_sequence = px.colors.qualitative.Safe,
+             labels = {'perc of manuf vacc': '% of Total Doses', 'Vaccine_Manufacturer': 'Vaccine Manufacturer'},
+            )
+
+
+    # Adjust formatting
+    fig.update_layout(title_text = "<b>Percentage of Total Doses by Manufacturer<br></b><i>by Country</i>", 
+                      title_x = 0.03,
+                      titlefont=dict(size =16, color='white'),
+                      yaxis = dict(tickformat = "0.0f"),
+                      paper_bgcolor = "rgba(0,0,0,0)", 
+                      plot_bgcolor = "rgba(0,0,0,0)")
+    fig.update_traces(hovertemplate = None)
+    fig.update_layout(hovermode = "x unified")
+    fig.update_xaxes(showline = True, linewidth = 1, linecolor = '#DCDCDC', mirror = True,
+                     showgrid = True, gridwidth = 1, gridcolor = '#DCDCDC',
+                     title = '')
+    fig.update_yaxes(title_font_color="white")
+    fig.update_xaxes(title_font_color="white")
+
+    # Display graph
     return fig
 
 

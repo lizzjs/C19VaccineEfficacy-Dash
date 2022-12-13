@@ -4,7 +4,7 @@ from assets.styling import *
 from dash import dcc, html, Dash
 
 from dash.dependencies import Input, Output
-from utils.layout_utils import build_tabs, build_banner, build_quick_stats_panel, build_graph_div, build_eff_table_div, build_markdown_section
+from utils.layout_utils import build_tabs, build_banner, build_quick_stats_panel, build_graph_div, build_eff_table_div, build_markdown_section,build_mark_downs,build_quick_stats_vacc,build_quick_stats_country,build_quick_stats_variants,build_quick_stats_manuf
 from utils.build_components import generate_section_banner
 from utils.generate_visualizations import plot_world_map, line_area_breakout_graph, generate_percent_vaccinated_graph, generate_tree_map, protected_over_time_agg,total_vacc_admin, create_area_graph,create_bubble_plot,breakthrough_agg 
 from utils.data_processing import init_data
@@ -102,10 +102,10 @@ def render_tab_content(tab_switch):
             html.Div(
                 id="status-container",
                 children=[
-                    build_quick_stats_panel(),
+                    build_mark_downs(),
                     html.Div(
                         id="graphs-container",
-                        children=[
+                        children=[dbc.Row([build_quick_stats_vacc(),build_quick_stats_country(),build_quick_stats_manuf(),build_quick_stats_variants()]),
                                 # build_markdown_section(markdown_text=dashboard_desc_md, section_header='Dashboard Description'),
                                 # build_markdown_section(markdown_text=section_1_md),
                                 # WORLD MAP 

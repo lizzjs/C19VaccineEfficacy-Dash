@@ -68,6 +68,108 @@ def build_tabs():
         ],
     )
 
+#Allen
+def build_mark_downs():
+    return html.Div(
+        children=[
+            build_markdown_section(markdown_text=dashboard_desc_md, section_header='Dashboard Description'),
+            build_markdown_section(markdown_text=section_1_md),
+            build_markdown_section(markdown_text=section_2_md),
+            build_markdown_section(markdown_text=perc_total_doses_by_manufacturer_md), 
+            build_markdown_section(markdown_text=protected_over_time_agg_md),
+            build_markdown_section(markdown_text=breakthrough_over_time_md),
+            build_markdown_section(markdown_text=section_3_md),
+            build_markdown_section(markdown_text=efficacy_md),
+            html.Br()
+        ]
+
+    ) 
+
+
+def build_quick_stats_manuf():
+    return html.Div(
+        id="quick-stats",
+        className="row",
+        children=[
+            html.Div(
+                id="card-1",
+                children=[
+                    html.P("Vaccine Manufacturers"),
+                    daq.LEDDisplay(
+                        id="operator-led",
+                        value="13", #2482427113 
+                        color="#9575cd",
+                        backgroundColor="#1e2130",
+                        size=50,
+                    ),
+                ],
+            ),
+        ],
+    )
+
+def build_quick_stats_variants():
+    return html.Div(
+        id="quick-stats",
+        className="row",
+        children=[
+            html.Div(
+                id="card-1",
+                children=[
+                    html.P("Covid Variants Considered"),
+                    daq.LEDDisplay(
+                        id="operator-led",
+                        value="3", #2482427113 
+                        color="#9575cd",
+                        backgroundColor="#1e2130",
+                        size=50,
+                    ),
+                ],
+            ),
+        ],
+    )
+
+def build_quick_stats_vacc():
+    return html.Div(
+        id="quick-stats",
+        className="row",
+        children=[
+            html.Div(
+                id="card-1",
+                children=[
+                    html.P("Total Doses Given (B)"),
+                    daq.LEDDisplay(
+                        id="operator-led",
+                        value="2.482", #2482427113 
+                        color="#9575cd",
+                        backgroundColor="#1e2130",
+                        size=50,
+                    ),
+                ],
+            ),
+        ],
+    )
+
+def build_quick_stats_country():
+    return html.Div(
+        id="quick-stats",
+        className="row",
+        children=[
+            html.Div(
+                id="card-1",
+                children=[
+                    html.P("Total Number of Countries"),
+                    daq.LEDDisplay(
+                        id="operator-led",
+                        value="43",
+                        color="#e8bcf0",
+                        backgroundColor="#1e2130",
+                        size=50,
+                    ),
+                ],
+            ),
+        ],
+    )
+
 def build_quick_stats_panel():
     return html.Div(
         id="quick-stats",
@@ -84,11 +186,6 @@ def build_quick_stats_panel():
                         backgroundColor="#1e2130",
                         size=50,
                     ),
-                ],
-            ),
-            html.Div(
-                id="card-2",
-                children=[
                     html.P("Total Number of Countries"),
                     daq.LEDDisplay(
                         id="operator-led",
@@ -96,19 +193,32 @@ def build_quick_stats_panel():
                         color="#e8bcf0",
                         backgroundColor="#1e2130",
                         size=50,
-                    ),
+                    )
                 ],
             ),
-            html.Br(),
-            html.Br(),
-            build_markdown_section(markdown_text=dashboard_desc_md, section_header='Dashboard Description'),
-            build_markdown_section(markdown_text=section_1_md),
-            build_markdown_section(markdown_text=section_2_md),
-            build_markdown_section(markdown_text=perc_total_doses_by_manufacturer_md), 
-            build_markdown_section(markdown_text=protected_over_time_agg_md),
-            build_markdown_section(markdown_text=breakthrough_over_time_md),
-            build_markdown_section(markdown_text=section_3_md),
-            build_markdown_section(markdown_text=efficacy_md),
+            # html.Div(
+            #     id="card-2",
+            #     children=[
+            #         html.P("Total Number of Countries"),
+            #         daq.LEDDisplay(
+            #             id="operator-led",
+            #             value="43",
+            #             color="#e8bcf0",
+            #             backgroundColor="#1e2130",
+            #             size=50,
+            #         ),
+            #     ],
+            # ),
+            #html.Br(),
+            #html.Br(),
+            # build_markdown_section(markdown_text=dashboard_desc_md, section_header='Dashboard Description'),
+            # build_markdown_section(markdown_text=section_1_md),
+            # build_markdown_section(markdown_text=section_2_md),
+            # build_markdown_section(markdown_text=perc_total_doses_by_manufacturer_md), 
+            # build_markdown_section(markdown_text=protected_over_time_agg_md),
+            # build_markdown_section(markdown_text=breakthrough_over_time_md),
+            # build_markdown_section(markdown_text=section_3_md),
+            # build_markdown_section(markdown_text=efficacy_md),
         ],
     )
 
