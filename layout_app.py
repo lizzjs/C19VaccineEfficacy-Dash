@@ -126,23 +126,23 @@ def render_tab_content(tab_switch):
                                 #     radio_options = manufacturers, 
                                 #     ),
                                 # TREE MAP
-                                build_graph_div(fig=generate_tree_map(df),section_header="Tree Map Test"),
+                                build_graph_div(fig=generate_tree_map(df),section_header=""),
                                 # Total Vaccination Administered by Country Bar Plot 
                                 build_graph_div(fig=total_vacc_admin(eff_df),section_header="Total Vaccinations Administered Per Country"),
                                 build_markdown_section(markdown_text=section_2_md),
                                 # Percentage of Total Doses Area Chart
                                 build_graph_div(
                                     fig='area_graph',
-                                    section_header='Percentage of Total Doses by Manufacturer over Time',
+                                    section_header='',
                                     enable_dropdown=True,
                                     dropdown_id='countries-select-single',
                                     dropdown_options=countries,
-                                    dropdown_label='Select Country'),
+                                    dropdown_label='Select Page Level Filter Country'),
                                 build_markdown_section(markdown_text=perc_total_doses_by_manufacturer_md), 
                                 # Percentage of Total Doses Administered not Protected
                                 build_graph_div(
                                     fig='protected_over_time_agg',
-                                    section_header='Percentage of Total Doses Administered not Protected from Infection over Time, by Variant',
+                                    section_header='',
                                     enable_dropdown=False,
                                     dropdown_id='countries-select-single',
                                     dropdown_options=countries,
@@ -151,7 +151,7 @@ def render_tab_content(tab_switch):
                                 # Breakthrough 
                                 build_graph_div(
                                     fig='breakthrough',
-                                    section_header='Breakthrough over Time, by Variant',
+                                    section_header='',
                                     enable_dropdown=False,
                                     dropdown_id='countries-select-single',
                                     dropdown_options=countries,
@@ -161,7 +161,7 @@ def render_tab_content(tab_switch):
                                 # <------------------- (include here)
                                 build_markdown_section(markdown_text=section_3_md),
                                 #TABLE OF EFFICACY RATES
-                                build_graph_div(fig = create_bubble_plot(eff_df),section_header='Vaccine Efficacy by Variant, Manufacturer'),
+                                build_graph_div(fig = create_bubble_plot(eff_df),section_header=''),
                                 build_markdown_section(markdown_text=efficacy_md),
                                 html.Div(children=[
                                     generate_section_banner(title="Table of Efficacy Rates"),

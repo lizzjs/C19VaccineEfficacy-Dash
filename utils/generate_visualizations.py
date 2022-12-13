@@ -19,13 +19,13 @@ def plot_world_map(manufacturer, df):
 
 def generate_tree_map(df):
     fig = px.treemap(
-        df,
+        df.loc[df.groupby(['Country','Vaccine_Manufacturer']).Date.idxmax()],
         path=["Country", "Vaccine_Manufacturer"],
         color='Total_Vaccinations',
-        color_continuous_scale=px.colors.sequential.Purp
+        color_continuous_scale=px.colors.sequential.Purp,hover_data=['Total_Vaccinations']
     )
-
-    fig.update_layout( title_x=0.5, title_y=0.90, 
+    fig.update_traces(hovertemplate='%{customdata[0]}')
+    fig.update_layout(title_text="<b>Number of Vaccine Variants<br></b><i>by Country</i>" ,title_x=0.05, 
                         font_color='white', plot_bgcolor="#6379bf", paper_bgcolor="#1e2130", 
                         hoverlabel=dict(font_size=12))
     fig.data[0].hovertemplate = (
@@ -36,6 +36,7 @@ def generate_tree_map(df):
         '<br>' +
         '<br>' 
     )   
+
     return fig 
 
 def line_area_breakout_graph(df, country):
@@ -101,14 +102,14 @@ def protected_over_time_agg(df, country):
                   color = 'Variant',
                   labels = {'perc of manuf vacc not prot': '% of Total Doses'})
                 #   title="layout.hovermode='x unified'")
-    fig.update_layout(margin=dict(l=5, r=5, t=20, b=20), paper_bgcolor="#1d202d", plot_bgcolor="#34394f", font_color="white")
+    fig.update_layout( paper_bgcolor="#1d202d", plot_bgcolor="#34394f", font_color="white")
     fig.update_xaxes(showline=True, linewidth=1, linecolor='black', mirror=True, gridwidth=1, gridcolor="#5a6285")
     fig.update_yaxes(showline=True, linewidth=1, linecolor='black', mirror=True, gridwidth=1, gridcolor="#5a6285")
     
-    fig.update_layout(title_text = "", 
+    fig.update_layout(title_text = "<b>"+country+"</b>" +": <b>Percentage of Total Doses Administered not Protected from Infection<br></b><i>over Time, by Variant</i>", 
                       title_x = 0.05,
-                      titlefont=dict(size =16, color='black'),
-                      yaxis = dict(tickformat = "0.0f"))
+                      titlefont=dict(size =16, color='white'),
+                      yaxis = dict(tickformat = "0.0f"),margin=dict(t=105))
     fig.update_xaxes(showline = True, linewidth = 1, linecolor = '#DCDCDC', mirror = True,
                      showgrid = True, gridwidth = 1, gridcolor = '#DCDCDC')
     fig.update_yaxes(showline = True, linewidth = 1, linecolor = '#DCDCDC', mirror = True,
@@ -118,6 +119,7 @@ def protected_over_time_agg(df, country):
     fig.update_layout(hovermode="x unified")
     
     return fig
+
 
 
 def total_vacc_admin(df):
@@ -151,13 +153,13 @@ def create_area_graph(df, country):
              color_discrete_sequence = px.colors.qualitative.Safe)
     
     # Adjust formatting
-    fig.update_layout(title_text='',
+    fig.update_layout(title_text="<b>"+country+"</b>" +": <b>Percentage of Total Doses by Manufacturer<br></b><i>over Time</i>",
                         yaxis = dict(tickformat = "0.0f"),
                       paper_bgcolor = "rgba(0,0,0,0)", 
                       plot_bgcolor = "rgba(0,0,0,0)")
     fig.update_traces(hovertemplate = None)
     fig.update_layout(hovermode = "x unified")
-    fig.update_layout(margin=dict(l=5, r=5, t=20, b=20), paper_bgcolor="#1d202d", plot_bgcolor="#34394f", font_color="white")
+    fig.update_layout(paper_bgcolor="#1d202d", plot_bgcolor="#34394f", font_color="white")
     fig.update_xaxes(showline=True, linewidth=1, linecolor='black', mirror=True, gridwidth=1, gridcolor="#5a6285")
     fig.update_yaxes(showline=True, linewidth=1, linecolor='black', mirror=True, gridwidth=1, gridcolor="#5a6285")
 
@@ -196,9 +198,9 @@ def create_bubble_plot(df):
                  title="layout.hovermode='closest'")
     
     # Format visual
-    fig.update_layout(title_text = "", 
-                          title_x = 0.0,
-                          titlefont=dict(size =16, color='black'),
+    fig.update_layout(title_text = "<b>Vaccine Efficacy<br></b><i>by Variant, Manufacturer</i>", 
+                          title_x = 0.05,
+                          titlefont=dict(size =16, color='white'),
                           yaxis = dict(tickformat = "0.0f"))
     fig.update_xaxes(showline = True, linewidth = 1, linecolor = '#DCDCDC', mirror = True,
                      showgrid = True, gridwidth = 1, gridcolor = '#DCDCDC',
@@ -209,12 +211,13 @@ def create_bubble_plot(df):
     fig.update_traces(hovertemplate=None)
     fig.update_layout(hovermode="closest")
 
-    fig.update_layout(margin=dict(l=5, r=5, t=20, b=20), paper_bgcolor="#1d202d", plot_bgcolor="#34394f", font_color="white")
+    fig.update_layout(margin=dict(t = 105), paper_bgcolor="#1d202d", plot_bgcolor="#34394f", font_color="white")
     #fig.update_xaxes(showline=True, linewidth=1, linecolor='black', mirror=True, gridwidth=1, gridcolor="#5a6285")
     #ig.update_yaxes(showline=True, linewidth=1, linecolor='black', mirror=True, gridwidth=1, gridcolor="#5a6285", range=[0,100])
     
     # Display visual
     return fig 
+
 
 
 
@@ -248,13 +251,13 @@ def breakthrough_agg(df, country):
                   labels = {'Breakthrough': 'Breakthrough per 100 people'},
                   title="layout.hovermode='x unified'",
                   color_discrete_sequence = px.colors.qualitative.Safe)
-    fig.update_layout(margin=dict(l=5, r=5, t=20, b=20), paper_bgcolor="#1d202d", plot_bgcolor="#34394f", font_color="white")
+    fig.update_layout(paper_bgcolor="#1d202d", plot_bgcolor="#34394f", font_color="white")
     fig.update_xaxes(showline=True, linewidth=1, linecolor='black', mirror=True, gridwidth=1, gridcolor="#5a6285")
     fig.update_yaxes(showline=True, linewidth=1, linecolor='black', mirror=True, gridwidth=1, gridcolor="#5a6285")
     
-    fig.update_layout(title_text = "", 
+    fig.update_layout(title_text = "<b>"+country+"</b>" +": <b>Percentage of Total Doses Administered not Protected from Infection<br></b><i>over Time, by Variant</i>", 
                       title_x = 0.05,
-                      titlefont=dict(size =16, color='black'),
+                      titlefont=dict(size =16, color='white'),
                       yaxis = dict(tickformat = "0.0f"))
     fig.update_xaxes(showline = True, linewidth = 1, linecolor = '#DCDCDC', mirror = True,
                      showgrid = True, gridwidth = 1, gridcolor = '#DCDCDC')

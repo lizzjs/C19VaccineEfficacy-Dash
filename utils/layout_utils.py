@@ -106,7 +106,10 @@ def build_graph_div(fig, section_header, **kwargs):
     '''
     docs.md
     '''
-    div_children = [generate_section_banner(section_header)]
+    div_children = []
+    if fig == 'map-graphic':
+        div_children.append(generate_section_banner(section_header))
+
     if isinstance(fig, str):
         graph_object = dcc.Graph(id=f"{fig}")
     else: 
@@ -167,6 +170,10 @@ def build_graph_div(fig, section_header, **kwargs):
                     ]
                 )
         div_children.append(radio_div)
+        
+    if fig != 'map-graphic':
+        div_children.append(generate_section_banner(section_header))
+
     div_children.append(graph_object)
     
     return html.Div(
