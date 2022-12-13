@@ -9,8 +9,9 @@ def init_data():
     eff_df = init_efficacy_df(df)
     perc_df = pd.read_csv(os.path.join("data", "share-people-vaccinated-covid.csv"))
 
-    return df, eff_df, perc_df
-
+    vac_eff_df = pd.read_csv(os.path.join("data","Vaccine_Efficacy.csv"))
+    return df, eff_df, perc_df, vac_eff_df
+    
 '''
 #COMMENTED OUT CODE 
 # Really bad function to fill in missing data for time series - Allen

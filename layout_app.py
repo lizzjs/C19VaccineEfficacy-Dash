@@ -4,10 +4,12 @@ from assets.styling import *
 from dash import dcc, html, Dash
 
 from dash.dependencies import Input, Output
-from utils.layout_utils import build_tabs, build_banner, build_quick_stats_panel, build_graph_div, build_eff_table_div
+from utils.layout_utils import build_tabs, build_banner, build_quick_stats_panel, build_graph_div, build_eff_table_div, build_markdown_section
 from utils.build_components import generate_section_banner
 from utils.generate_visualizations import plot_world_map, line_area_breakout_graph, generate_percent_vaccinated_graph, generate_tree_map, protected_over_time_agg,total_vacc_admin, create_area_graph,create_bubble_plot,breakthrough_agg 
 from utils.data_processing import init_data
+
+from assets.tab1_markdown import dashboard_desc_md, section_1_md, section_2_md, perc_total_doses_by_manufacturer_md, protected_over_time_agg_md, breakthrough_over_time_md, section_3_md, efficacy_md
 
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets, suppress_callback_exceptions=True)
@@ -16,7 +18,7 @@ server = app.server
 banner_title = "COVID 19 Vaccine Efficacy Dashboard"
 banner_credits = "DSE I2700 - Lizzette Salmeron, Allen Lau, Analee Graig"
 
-df, eff_df, perc_df = init_data()
+df, eff_df, perc_df, vac_eff_df = init_data()
 
 countries = list(df.Country.unique())
 manufacturers = list(df.Vaccine_Manufacturer.unique())
@@ -104,6 +106,8 @@ def render_tab_content(tab_switch):
                     html.Div(
                         id="graphs-container",
                         children=[
+                                build_markdown_section(markdown_text=dashboard_desc_md, section_header='Dashboard Description'),
+                                build_markdown_section(markdown_text=section_1_md),
                                 # WORLD MAP 
                                 build_graph_div(
                                     fig='map-graphic', 
@@ -125,6 +129,7 @@ def render_tab_content(tab_switch):
                                 build_graph_div(fig=generate_tree_map(df),section_header="Tree Map Test"),
                                 # Total Vaccination Administered by Country Bar Plot 
                                 build_graph_div(fig=total_vacc_admin(eff_df),section_header="Total Vaccinations Administered Per Country"),
+                                build_markdown_section(markdown_text=section_2_md),
                                 # Percentage of Total Doses Area Chart
                                 build_graph_div(
                                     fig='area_graph',
@@ -133,6 +138,7 @@ def render_tab_content(tab_switch):
                                     dropdown_id='countries-select-single',
                                     dropdown_options=countries,
                                     dropdown_label='Select Country'),
+                                build_markdown_section(markdown_text=perc_total_doses_by_manufacturer_md), 
                                 # Percentage of Total Doses Administered not Protected
                                 build_graph_div(
                                     fig='protected_over_time_agg',
@@ -141,6 +147,7 @@ def render_tab_content(tab_switch):
                                     dropdown_id='countries-select-single',
                                     dropdown_options=countries,
                                     dropdown_label='Select Country'),
+                                build_markdown_section(markdown_text=protected_over_time_agg_md),
                                 # Breakthrough 
                                 build_graph_div(
                                     fig='breakthrough',
@@ -149,13 +156,16 @@ def render_tab_content(tab_switch):
                                     dropdown_id='countries-select-single',
                                     dropdown_options=countries,
                                     dropdown_label='Select Country'),
+                                build_markdown_section(markdown_text=breakthrough_over_time_md),
                                 # #BAR GRAPH
                                 # <------------------- (include here)
+                                build_markdown_section(markdown_text=section_3_md),
                                 #TABLE OF EFFICACY RATES
                                 build_graph_div(fig = create_bubble_plot(eff_df),section_header='Vaccine Efficacy by Variant, Manufacturer'),
+                                build_markdown_section(markdown_text=efficacy_md),
                                 html.Div(children=[
-                                    #generate_section_banner(title="Table of Efficacy Rates"),
-                                    #build_eff_table_div(eff_df, max_rows=10)          
+                                    generate_section_banner(title="Table of Efficacy Rates"),
+                                    build_eff_table_div(vac_eff_df, max_rows=10)          
                                 ]),       
                             ],
                     ),

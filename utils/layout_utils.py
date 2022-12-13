@@ -4,7 +4,7 @@ import dash_daq as daq
 
 from utils.data_processing import init_data
 
-df, eff_df, perc_df = init_data()
+df, eff_df, perc_df, vac_eff_df = init_data()
 manufacturers = list(df.Vaccine_Manufacturer.unique())
 
 
@@ -176,6 +176,8 @@ def build_graph_div(fig, section_header, **kwargs):
     )
 
 def build_eff_table_div(df, max_rows=10):
+    df = df[["Vaccine_Manufacturer", "Eff Severe Disease Alpha", "Eff Infection Alpha", 
+    "Eff Severe Disease delta", "Eff Infection Delta", "Eff Severe Disease Omicron", "Eff Infection Omicron"]]
     return( 
         dash_table.DataTable(
             data=df.head(max_rows).to_dict('records'), 
@@ -192,5 +194,20 @@ def build_eff_table_div(df, max_rows=10):
             style_cell_conditional=[  # align text columns to left. By default they are aligned to right
                 {"if": {"column_id": c}, "textAlign": "center"} for c in df.columns
             ]
+        )
+    )
+
+def build_markdown_section(markdown_text, section_header=None):
+    div_children = []
+    if section_header:
+        div_children.append(generate_section_banner(section_header))
+    div_children.append(dcc.Markdown(markdown_text, dedent=False))
+    return (
+        html.Div(
+            id="control-chart-container",
+            className="twelve columns", 
+            children = html.Div(
+                children = div_children
+            )
         )
     )
