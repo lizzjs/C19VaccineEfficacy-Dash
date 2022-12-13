@@ -159,14 +159,18 @@ def total_vacc_admin(df):
                       titlefont=dict(size =16, color='white'),
                       yaxis = dict(tickformat = "0.0f"),
                       paper_bgcolor = "rgba(0,0,0,0)", 
-                      plot_bgcolor = "rgba(0,0,0,0)")
+                      plot_bgcolor = "rgba(0,0,0,0)",
+                      hoverlabel=dict(bgcolor="#161a28"))
     fig.update_traces(hovertemplate = None)
-    fig.update_layout(hovermode = "x unified")
-    fig.update_xaxes(showline = True, linewidth = 1, linecolor = '#DCDCDC', mirror = True,
-                     showgrid = True, gridwidth = 1, gridcolor = '#DCDCDC',
-                     title = '')
-    fig.update_yaxes(title_font_color="white")
-    fig.update_xaxes(title_font_color="white")
+    fig.update_layout(hovermode = "x unified",
+                      legend_font_color = 'white')
+    fig.update_xaxes(showline = False, linewidth = 0, linecolor = '#DCDCDC', mirror = True,
+                     showgrid = False, gridwidth = 1, gridcolor = '#161a28',
+                     title = '', zeroline=False)
+    fig.update_yaxes(title_font_color="white",
+                     color = 'white', zeroline=False, mirror = True, gridcolor = '#161a28')
+    fig.update_xaxes(title_font_color="white",
+                     color = 'white')
 
     # Display graph
     return fig
@@ -293,7 +297,7 @@ def breakthrough_agg(df, country):
     fig.update_xaxes(showline=True, linewidth=1, linecolor='black', mirror=True, gridwidth=1, gridcolor="#5a6285")
     fig.update_yaxes(showline=True, linewidth=1, linecolor='black', mirror=True, gridwidth=1, gridcolor="#5a6285")
     
-    fig.update_layout(title_text = "<b>"+country+"</b>" +": <b>Percentage of Total Doses Administered not Protected from Infection<br></b><i>over Time, by Variant</i>", 
+    fig.update_layout(title_text = "<b>"+country+"</b>" +": <b>Breakthrough Rate per 100 People<br></b><i>over Time, by Variant</i>", 
                       title_x = 0.05,
                       titlefont=dict(size =16, color='white'),
                       yaxis = dict(tickformat = "0.0f"))
