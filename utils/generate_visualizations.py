@@ -6,16 +6,22 @@ import pandas as pd
 from utils.data_processing import color_in
 
 def plot_world_map(manufacturer, df):
-    df['Availibility'] = df.apply (lambda row: color_in(row, manufacturer), axis=1)
+    df['Vaccine'] = df.apply (lambda row: color_in(row, manufacturer), axis=1)
     fig = px.choropleth(df,
                        locations=df.Code,
-                       color='Availibility',
+                       color='Vaccine',
                        color_discrete_map={
-                           f"{manufacturer} administered": df.Colors.iloc[1]
+                           f"{manufacturer}": df.Colors.iloc[1]
                        },
-                        projection='natural earth'
-                       )
+                        projection='natural earth',
+                        # hover_data = ['Country'],
+                        # hover_label=dict(bgcolor="#161a28")
+                        )
+    fig.update_traces(hovertemplate=None)           
     fig.update_layout(font_color='white', plot_bgcolor="#6379bf", paper_bgcolor="#1e2130")
+    fig.update_layout(titlefont=dict(size =16, color='white'))
+    fig.update_traces(showlegend=False)
+    print(fig.data)
     return fig
 
 def generate_tree_map(df):
@@ -23,20 +29,23 @@ def generate_tree_map(df):
         df.loc[df.groupby(['Country','Vaccine_Manufacturer']).Date.idxmax()],
         path=["Country", "Vaccine_Manufacturer"],
         color='Total_Vaccinations',
-        color_continuous_scale=px.colors.sequential.Purp,hover_data=['Total_Vaccinations']
+        color_continuous_scale=px.colors.sequential.Purp,
+        # hover_data=['Total_Vaccinations']
     )
-    fig.update_traces(hovertemplate='%{customdata[0]}')
+    fig.update_traces(hovertemplate='Number of Doses: <br>%{customdata[0]}')
     fig.update_layout(title_text="<b>Number of Vaccine Variants<br></b><i>by Country</i>" ,title_x=0.05, 
                         font_color='white', plot_bgcolor="#6379bf", paper_bgcolor="#1e2130", 
                         hoverlabel=dict(font_size=12))
     fig.data[0].hovertemplate = (
         '<b>%{label}</b>'
         '<br>' +
-        '<br>' +
-        '# of Vaccines: <br>%{value}' + 
-        '<br>' +
+        '%{value}' + 
         '<br>' 
     )   
+    # fig.data[0].hovertemplate = ('<b>%{label}</b>'
+    #     '<br>' +
+    #     '<br>' +
+    #     'Number of Vaccine Doses: <br>%{customdata[0]}') 
 
     return fig 
 
@@ -103,7 +112,7 @@ def protected_over_time_agg(df, country):
                   color = 'Variant',
                   labels = {'perc of manuf vacc not prot': '% of Total Doses'})
                 #   title="layout.hovermode='x unified'")
-    fig.update_layout( paper_bgcolor="#1d202d", plot_bgcolor="#34394f", font_color="white")
+    fig.update_layout(paper_bgcolor="#1d202d", plot_bgcolor="#34394f", font_color="white")
     fig.update_xaxes(showline=True, linewidth=1, linecolor='black', mirror=True, gridwidth=1, gridcolor="#5a6285")
     fig.update_yaxes(showline=True, linewidth=1, linecolor='black', mirror=True, gridwidth=1, gridcolor="#5a6285")
     
@@ -158,7 +167,7 @@ def total_vacc_admin(df):
                       title_x = 0.03,
                       titlefont=dict(size =16, color='white'),
                       yaxis = dict(tickformat = "0.0f"),
-                      paper_bgcolor = "rgba(0,0,0,0)", 
+                      paper_bgcolor = "#1d202d", 
                       plot_bgcolor = "rgba(0,0,0,0)",
                       hoverlabel=dict(bgcolor="#161a28"))
     fig.update_traces(hovertemplate = None)
@@ -171,6 +180,7 @@ def total_vacc_admin(df):
                      color = 'white', zeroline=False, mirror = True, gridcolor = '#161a28')
     fig.update_xaxes(title_font_color="white",
                      color = 'white')
+    # fig.update_layout(paper_bgcolor="#1d202d")
 
     # Display graph
     return fig
@@ -240,7 +250,7 @@ def create_bubble_plot(df):
                  title="layout.hovermode='closest'")
     
     # Format visual
-    fig.update_layout(title_text = "<b>Vaccine Efficacy<br></b><i>by Variant, Manufacturer</i>", 
+    fig.update_layout(title_text = "<b>Vaccine Efficacy**<br></b><i>by Variant, Manufacturer</i>", 
                           title_x = 0.05,
                           titlefont=dict(size =16, color='white'),
                           yaxis = dict(tickformat = "0.0f"))

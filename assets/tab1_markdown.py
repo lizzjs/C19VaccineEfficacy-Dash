@@ -12,7 +12,6 @@ After using this dashboard, you should have a clearer picture of the relationshi
 ###### **Assumptions:**    
 * First, second, and booster doses are not factored into the efficacy rates and calculations for breakthrough. The mixing of vaccines is also not factored into the data, calculations, and visualizations.
 * Time series data obtained from external sources missing the total vaccines administered on a specific date for specific vaccine manufacturers are assumed to have remained constant from the last recorded total. 
-
 '''
 
 section_1_md ='''
@@ -33,6 +32,24 @@ country?
 '''
 section_2_md = '''
 ##### **Section 2.** 
+##### Efficacy of Different Vaccine Manufacturers 
+---  
+'''
+
+efficacy_md = '''
+  
+**Visualizations**:
+
+* Vaccine Efficacy by Variant, Manufacturer
+* Table of Efficacy Rates
+
+**Guiding Questions:**  
+* What is the efficacy for different vaccine manufacturers and variants?
+
+'''
+
+section_3_md = '''
+##### **Section 3.** 
 ##### Going Deeper: *Country Analysis*  
 ---    
   
@@ -72,23 +89,5 @@ breakthrough_over_time_md = '''
   
 * How has the breakthrough rate changed over time for different vaccine manufacturers?
 * What causes breakthrough rates to increase or decrease over time? Is this related to the prevalence of certain vaccine variants and their efficacy rates?
-
-'''
-
-section_3_md = '''
-##### **Section 3.** 
-##### Efficacy of Different Vaccine Manufacturers 
----  
-'''
-
-efficacy_md = '''
-  
-**Visualizations**:
-
-* Vaccine Efficacy by Variant, Manufacturer
-* Table of Efficacy Rates
-
-**Guiding Questions:**  
-* What is the efficacy for different vaccine manufacturers and variants?
 
 '''

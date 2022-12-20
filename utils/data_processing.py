@@ -209,7 +209,7 @@ def assign_color(row, colors):
 
 def color_in(row, manufacturer):
     if row.Vaccine_Manufacturer == manufacturer:
-        return f"{manufacturer} administered"
+        return f"{manufacturer}"
         
 def get_manufacturer_country(df):
     manufacturer = list(df['Vaccine_Manufacturer'].unique())
@@ -227,7 +227,7 @@ def get_manufacturer_country(df):
         country_codes[name] = code
     country_codes['Czechia'] = 'CZE'
 
-    colors = ["#2e0166", "#6e017a", "#4c017a", "#36017a", "#4c00b0", "#7600bc", "#8a00c2", "#a000c8", "#b100cd", "#be2ed6", "#ca5cdd", "#da8ee7", "#e8bcf0"]
+    colors = [ "#b100cd",'#B19CD8', "#be2ed6", "#ca5cdd", "#da8ee7", "#e8bcf0", "#2e0166", "#4c00b0", "#36017a", "#4c017a", "#6e017a", "#a000c8"]
 
     manufacturer_colors = {}
     for name, color in zip(manufacturer, colors):
