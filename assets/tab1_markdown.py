@@ -6,7 +6,8 @@ After using this dashboard, you should have a clearer picture of the relationshi
 * What is the % of COVID19 vaccine doses given that are protected from infection by country and over time for different COVID19 variants? Is it higher for certain variants than others?
 * What is the COVID19 breakthrough rate over time and by country for different variants?
 * Can we look at the above to help us understand the change in breakthrough rates for different countries?
-* What is the difference in efficacy for different vaccine manufacturers and COVID19 variants?
+* What is the difference in efficacy for different vaccine manufacturers 
+and COVID19 variants?
   
 ---  
 ###### **Assumptions:**    
@@ -89,5 +90,6 @@ breakthrough_over_time_md = '''
   
 * How has the breakthrough rate changed over time for different vaccine manufacturers?
 * What causes breakthrough rates to increase or decrease over time? Is this related to the prevalence of certain vaccine variants and their efficacy rates?
-
+* FORMULA: 
+*total vacc for manuf  / vacc per 100 ppl = (total vacc for manuf / total vacc given) x (total vacc given / vacc per 100 ppl)*
 '''

@@ -21,7 +21,6 @@ def plot_world_map(manufacturer, df):
     fig.update_layout(font_color='white', plot_bgcolor="#6379bf", paper_bgcolor="#1e2130")
     fig.update_layout(titlefont=dict(size =16, color='white'))
     fig.update_traces(showlegend=False)
-    print(fig.data)
     return fig
 
 def generate_tree_map(df):
